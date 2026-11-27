@@ -9,45 +9,45 @@
 <title>Family Clock</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;600&family=Righteous&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=B612:wght@700&family=Caveat:wght@600&family=Cinzel+Decorative:wght@700&family=Dancing+Script:wght@700&family=Inter:wght@300;400;600&family=Lobster&family=Overpass:wght@700&family=Righteous&family=Shippori+Mincho:wght@600&display=swap" rel="stylesheet">
 <style>
   :root { --page: #1d1712; --page-text: #f3e6c8; --chip: rgba(243,230,200,.06); --chip-border: rgba(233,207,138,.2); --name-font: Georgia, serif; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--page); color: var(--page-text); font-family: var(--name-font); overflow: hidden; -webkit-user-select: none; user-select: none; transition: background .4s; }
+  html, body { margin: 0; height: 100%; background: var(--page); color: var(--page-text); font-family: var(--name-font); overflow: hidden; -webkit-user-select: none; user-select: none; }
   .wrap { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; gap: 2.5vmin; padding: 2vmin; }
   @media (orientation: portrait) { .wrap { flex-direction: column; } }
   svg#clock { width: min(92vmin, 100%); height: auto; max-height: 92vh; }
   .legend { display: grid; gap: .6em; font-size: clamp(14px, 2.2vmin, 22px); min-width: 14em; }
+  .legend.hidden { display: none; }
   @media (orientation: portrait) { .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; width: min(92vmin, 100%); font-size: clamp(13px, 2.4vmin, 20px); } }
   .who { display: flex; align-items: center; gap: .6em; padding: .35em .7em; border-radius: .5em; background: var(--chip); border: 1px solid var(--chip-border); }
   .dot { width: 1.1em; height: 1.1em; border-radius: 50%; flex: none; }
-  .who b { font-weight: 600; }
-  .who span { opacity: .75; }
-  .status { position: fixed; left: 1.2vmin; bottom: 1vmin; font-size: 12px; opacity: .45; font-family: system-ui, sans-serif; }
+  .who b { font-weight: 600; } .who span { opacity: .78; }
+  .status { position: fixed; left: 1.2vmin; bottom: 1vmin; font-size: 12px; opacity: .5; font-family: system-ui, sans-serif; }
   .status.bad { opacity: .9; color: #e2603f; }
-  .gear { position: fixed; right: .6vmin; bottom: .2vmin; font-size: 22px; opacity: .25; background: none; border: 0; color: var(--page-text); padding: 10px; cursor: pointer; }
-  .gear:hover { opacity: .8; }
+  .gear { position: fixed; right: .6vmin; bottom: .2vmin; font-size: 22px; opacity: .3; background: none; border: 0; color: var(--page-text); padding: 10px; cursor: pointer; }
+  .gear:hover { opacity: .85; }
 
-  /* settings panel */
   .panel { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(10,8,6,.7); z-index: 5; }
   .panel.open { display: flex; }
-  .card { background: #fbf7ee; color: #2b2116; width: min(520px, 94vw); max-height: 92vh; display: flex; flex-direction: column; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.6); font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+  .card { background: #fbf7ee; color: #2b2116; width: min(560px, 94vw); max-height: 92vh; display: flex; flex-direction: column; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.6); font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
   .card header { padding: 18px 22px 0; }
   .card h2 { margin: 0 0 10px; font-size: 20px; }
   .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e3d8c3; }
   .tabs button { flex: 1; padding: 9px 4px; border: 0; background: none; font-size: 14px; color: #7a6a52; cursor: pointer; border-bottom: 3px solid transparent; }
   .tabs button.on { color: #2b2116; border-color: #a07a2c; font-weight: 600; }
-  .body { padding: 14px 22px; overflow: auto; flex: 1; }
+  .body { padding: 10px 22px 14px; overflow: auto; flex: 1; }
   .tab { display: none; } .tab.on { display: block; }
   .body p { margin: 4px 0 12px; font-size: 13px; color: #6b5c45; }
-  .body label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
+  .body label { display: block; font-size: 12px; font-weight: 600; margin: 12px 0 5px; }
   .body input[type=text], .body input[type=password], .body textarea { width: 100%; padding: 9px 10px; border: 1px solid #cdbb98; border-radius: 6px; font-size: 15px; background: #fff; color: #2b2116; font-family: inherit; }
-  .body textarea { font-size: 12px; height: 70px; resize: vertical; }
+  .body textarea { font-size: 12px; height: 64px; resize: vertical; }
   .row { display: flex; gap: 10px; } .row > div { flex: 1; }
-  .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .choices button { padding: 12px 8px; border-radius: 8px; border: 2px solid #e3d8c3; background: #fff; cursor: pointer; font-size: 14px; color: #2b2116; }
+  .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+  .choices.three { grid-template-columns: repeat(3, 1fr); }
+  .choices button { padding: 9px 6px; border-radius: 8px; border: 2px solid #e3d8c3; background: #fff; cursor: pointer; font-size: 13px; color: #2b2116; line-height: 1.2; }
   .choices button.on { border-color: #a07a2c; background: #fbf0d6; font-weight: 600; }
-  .choices small { display: block; font-size: 11px; color: #7a6a52; font-weight: 400; margin-top: 2px; }
+  .choices small { display: block; font-size: 10.5px; color: #7a6a52; font-weight: 400; margin-top: 2px; }
   .list { border: 1px solid #e3d8c3; border-radius: 8px; overflow: hidden; }
   .item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid #efe6d4; background: #fff; font-size: 14px; }
   .item:last-child { border-bottom: 0; }
@@ -84,14 +84,36 @@
     <div class="body">
       <div class="tab on" data-tab="look">
         <label>Clock face</label>
-        <div class="choices" id="themeChoices"></div>
+        <div class="choices three" id="themeChoices"></div>
         <label>Place names</label>
-        <div class="choices" id="labelChoices">
+        <div class="choices" data-key="labels">
           <button data-v="curved">Around the dial<small>curved, across the arms</small></button>
-          <button data-v="radial">Along the arms<small>reads outward, parallel to the arms</small></button>
+          <button data-v="radial">Along the arms<small>reads outward from the centre</small></button>
+        </div>
+        <label>People's names</label>
+        <div class="choices" data-key="armNames">
+          <button data-v="tag">Name tags<small>a round tag near each tip</small></button>
+          <button data-v="along">Written on the arm<small>wide arms with the name along them</small></button>
+        </div>
+        <label>Depth</label>
+        <div class="choices" data-key="depth">
+          <button data-v="flat">Flat</button>
+          <button data-v="3d">3D<small>shadows under the arms</small></button>
+        </div>
+        <label>Real time</label>
+        <div class="choices" data-key="showTime">
+          <button data-v="false">Off</button>
+          <button data-v="true">Show hour &amp; minute hands</button>
+        </div>
+        <label>Side list of people</label>
+        <div class="choices" data-key="showLegend">
+          <button data-v="true">Show</button>
+          <button data-v="false">Hide<small>dial only</small></button>
         </div>
         <label>Title in the middle (optional)</label>
         <input type="text" id="title" placeholder="e.g. The Burgins">
+        <label>Your own background picture (optional web address, e.g. face.png in the same GitHub folder)</label>
+        <input type="text" id="faceImage" placeholder="face.png" autocapitalize="off" autocorrect="off">
       </div>
       <div class="tab" data-tab="places">
         <p>Order around the dial, starting at the top and going clockwise. This only changes this screen; new places from Home Assistant are added at the end.</p>
@@ -99,9 +121,9 @@
         <button class="small-btn" id="resetPlaces">Reset to Home Assistant order</button>
       </div>
       <div class="tab" data-tab="people">
-        <p>Tap a color to change it. Top of the list gets the longest arm.</p>
+        <p>Tap a colour to change it. Top of the list gets the longest arm.</p>
         <div class="list" id="peopleList"></div>
-        <button class="small-btn" id="resetPeople">Reset colors and order</button>
+        <button class="small-btn" id="resetPeople">Reset colours and order</button>
       </div>
       <div class="tab" data-tab="conn">
         <p>Saved on this device only. Use the read-only <b>clock</b> login.</p>
@@ -115,7 +137,7 @@
           <div><label>Username</label><input type="text" id="user" value="clock" autocapitalize="off" autocorrect="off"></div>
           <div><label>Password</label><input type="password" id="pass"></div>
         </div>
-        <label>Setup code (copies look, order, colors and address to another device; password not included)</label>
+        <label>Setup code (copies look, order, colours and address to another device; password not included)</label>
         <textarea id="code" placeholder="Paste a setup code here, then tap Apply code"></textarea>
         <div class="row">
           <div><button class="small-btn" id="copyCode">Copy this device's code</button></div>
@@ -137,79 +159,26 @@
   const C = 500, R_OUT = 486, R_RING = 462, R_BAND_IN = 318, R_MID = (R_RING + R_BAND_IN) / 2;
   const L_MAX = 295, L_MIN = 150;
 
-  // ---------------- themes ----------------
-  const THEMES = {
-    classic: {
-      label: 'Classic', sub: 'parchment, brass, script',
-      page: 'radial-gradient(circle at 50% 40%, #2b221a, #1d1712 70%)', pageText: '#f3e6c8', chip: 'rgba(243,230,200,.07)', chipBorder: 'rgba(233,207,138,.22)',
-      face: ['#f7ecd2', '#ead7ae', '#cdb07a'], rim: ['#f4dea0', '#c79b45', '#8d6620', '#e5c57a'], line: '#6b4c1c', text: '#3a2a1a',
-      font: "'Dancing Script', 'Apple Chancery', 'Snell Roundhand', cursive", weight: 700, upper: false, charW: 0.47, cap: 34, spacing: 0, lineH: 1.05,
-      nameFont: "'Dancing Script', 'Apple Chancery', cursive", hand: 'ornate', handStroke: '#2a1a08', tagFill: '#fbf3df', tagText: null,
-      hub: ['#fbe8b0', '#b8892f', '#5e4416'], hubStroke: '#3d2b0c', titleColor: '#5e4416', ornament: 'diamond', shadow: true,
-      palette: ['#8c1c13', '#1f3a68', '#2d5a27', '#5b2a6e', '#9a6a12', '#16615e', '#a4471d', '#3f4a57', '#7a1f4a', '#4b5d16']
-    },
-    modern: {
-      label: 'Modern', sub: 'dark, clean, bright',
-      page: 'linear-gradient(160deg, #0b1020, #121a30)', pageText: '#e6ecff', chip: 'rgba(230,236,255,.06)', chipBorder: 'rgba(230,236,255,.14)',
-      face: ['#1b2440', '#151c33', '#10162a'], rim: ['#3a4770', '#232c4a', '#1a2240', '#3a4770'], line: 'rgba(230,236,255,.18)', text: '#e6ecff',
-      font: "'Inter', system-ui, -apple-system, sans-serif", weight: 600, upper: true, charW: 0.72, cap: 22, spacing: 2, lineH: 1.15,
-      nameFont: "'Inter', system-ui, sans-serif", hand: 'slim', handStroke: 'none', tagFill: '#10162a', tagText: '#ffffff',
-      hub: ['#ffffff', '#c9d3f2', '#8a96bd'], hubStroke: '#0b1020', titleColor: '#9aa8d6', ornament: 'dot', shadow: false,
-      palette: ['#ff6b6b', '#4dabf7', '#51cf66', '#cc5de8', '#fcc419', '#20c997', '#ff922b', '#91a7ff', '#f06595', '#a9e34b']
-    },
-    minimal: {
-      label: 'Minimal', sub: 'white, thin lines',
-      page: '#f2f1ee', pageText: '#1a1a1a', chip: 'rgba(0,0,0,.03)', chipBorder: 'rgba(0,0,0,.08)',
-      face: ['#ffffff', '#ffffff', '#f7f7f5'], rim: ['#1a1a1a', '#1a1a1a', '#1a1a1a', '#1a1a1a'], rimThin: true, line: 'rgba(0,0,0,.12)', text: '#1a1a1a',
-      font: "'Helvetica Neue', Helvetica, Arial, sans-serif", weight: 400, upper: false, charW: 0.55, cap: 24, spacing: 0.5, lineH: 1.15,
-      nameFont: "'Helvetica Neue', Helvetica, Arial, sans-serif", hand: 'line', handStroke: 'none', tagFill: '#ffffff', tagText: null,
-      hub: ['#1a1a1a', '#1a1a1a', '#1a1a1a'], hubStroke: '#1a1a1a', titleColor: '#888', ornament: 'none', shadow: false,
-      palette: ['#d94841', '#2f6fdb', '#2e9e5b', '#8e44ad', '#e0a100', '#12a39a', '#e8702a', '#5c6b7a', '#c2185b', '#6b8e23']
-    },
-    retro: {
-      label: 'Retro', sub: '70s cream, orange, chunky',
-      page: 'radial-gradient(circle at 50% 40%, #3a2516, #22150c 75%)', pageText: '#f6e7c8', chip: 'rgba(246,231,200,.07)', chipBorder: 'rgba(232,140,48,.3)',
-      face: ['#f8ecd0', '#f1dfb7', '#e3c993'], rim: ['#f2a33a', '#d9662b', '#a8461b', '#e88a30'], line: '#b45a24', text: '#5a2d0c',
-      font: "'Righteous', 'Cooper Black', 'Arial Rounded MT Bold', sans-serif", weight: 400, upper: true, charW: 0.68, cap: 24, spacing: 1, lineH: 1.1,
-      nameFont: "'Righteous', 'Arial Rounded MT Bold', sans-serif", hand: 'chunky', handStroke: '#3b1d08', tagFill: '#fff6e0', tagText: null,
-      hub: ['#ffd27a', '#e07b2c', '#8a3412'], hubStroke: '#3b1d08', titleColor: '#a8461b', ornament: 'sun', shadow: true,
-      palette: ['#c0392b', '#e67e22', '#d4a017', '#6b8e23', '#1f7a7a', '#8e3b5b', '#7b4a2a', '#3d5a80', '#b5651d', '#556b2f']
-    }
-  };
-
-  // ---------------- settings (this device only) ----------------
-  const KEY = 'weasley-clock-settings';
-  const DEFAULTS = { host: '', port: '8084', topic: 'clock/state', user: 'clock', pass: '', title: '', theme: 'classic', labels: 'curved', order: null, peopleOrder: null, colors: {} };
-  let mem = null;
-  function load() {
-    let s = null;
-    try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
-    return Object.assign({}, DEFAULTS, s || mem || {});
-  }
-  function save(s) { mem = s; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
-  let S = load();
-  const hasConnection = () => !!S.host;
-
-  // ---------------- helpers ----------------
-  const svg = document.getElementById('clock'), legend = document.getElementById('legend'), statusEl = document.getElementById('status');
+  // ---------------- small helpers ----------------
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
   const rad = d => (d - 90) * Math.PI / 180;
   const pt = (r, d) => [C + r * Math.cos(rad(d)), C + r * Math.sin(rad(d))];
   const norm = s => String(s).toLowerCase().replace(/[^a-z]/g, '');
+  const rng = seed => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   function arcPath(r, a0, a1, reverse) {
     const [x0, y0] = pt(r, reverse ? a1 : a0), [x1, y1] = pt(r, reverse ? a0 : a1);
     return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${Math.abs(a1 - a0) > 180 ? 1 : 0} ${reverse ? 0 : 1} ${x1.toFixed(1)},${y1.toFixed(1)}`;
   }
-  // Two or more words always go on two lines (balanced), one word stays on one line.
+  function sector(r0, r1, a0, a1) {
+    const [x0, y0] = pt(r1, a0), [x1, y1] = pt(r1, a1), [x2, y2] = pt(r0, a1), [x3, y3] = pt(r0, a0);
+    const lg = a1 - a0 > 180 ? 1 : 0;
+    return `M${x0},${y0} A${r1},${r1} 0 ${lg} 1 ${x1},${y1} L${x2},${y2} A${r0},${r0} 0 ${lg} 0 ${x3},${y3} Z`;
+  }
   function twoLines(s) {
     const w = s.trim().split(/\s+/);
     if (w.length < 2) return [s.trim()];
     let best = null, diff = 1e9;
-    for (let i = 1; i < w.length; i++) {
-      const a = w.slice(0, i).join(' '), b = w.slice(i).join(' ');
-      const d = Math.abs(a.length - b.length);
-      if (d < diff) { diff = d; best = [a, b]; }
-    }
+    for (let i = 1; i < w.length; i++) { const a = w.slice(0, i).join(' '), b = w.slice(i).join(' '), d = Math.abs(a.length - b.length); if (d < diff) { diff = d; best = [a, b]; } }
     return best;
   }
   function merge(saved, current) {
@@ -219,148 +188,431 @@
     cur.forEach(x => { if (!out.includes(x)) out.push(x); });
     return out;
   }
+  function textOn(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(hex || ''); if (!m) return '#fff';
+    const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 160 ? '#1a1a1a' : '#ffffff';
+  }
+
+  // ---------------- decorations used by the themes ----------------
+  const deco = {
+    stars(g, T) {
+      const r = rng(7);
+      const stars = el('g', { filter: 'url(#glow)' }, g);
+      const pts = [];
+      for (let i = 0; i < 150; i++) {
+        const a = r() * 360, d = Math.sqrt(r()) * (R_BAND_IN - 12);
+        const [x, y] = pt(d, a); const s = r();
+        pts.push([x, y]);
+        el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: (0.5 + s * s * 2.4).toFixed(2), fill: '#fff6d8', opacity: (0.35 + r() * 0.6).toFixed(2) }, stars);
+      }
+      // a few made-up constellations
+      const lines = el('g', { stroke: '#f0cf77', 'stroke-width': 1, opacity: .28, fill: 'none' }, g);
+      for (let c = 0; c < 5; c++) {
+        const a = c * 72 + 20, d = 150 + (c % 2) * 70, path = [];
+        for (let k = 0; k < 5; k++) { const [x, y] = pt(d + (r() - .5) * 80, a + (r() - .5) * 40); path.push(`${k ? 'L' : 'M'}${x.toFixed(0)},${y.toFixed(0)}`); el('circle', { cx: x, cy: y, r: 2.6, fill: '#fff6d8', stroke: 'none', opacity: 2.5 }, lines); }
+        el('path', { d: path.join(' ') }, lines);
+      }
+      // ring of moon phases
+      const moons = el('g', {}, g);
+      for (let i = 0; i < 8; i++) {
+        const [x, y] = pt(R_BAND_IN - 46, i * 45 + 22.5);
+        el('circle', { cx: x, cy: y, r: 11, fill: '#f6e7b4', opacity: .85 }, moons);
+        const off = [0, 7, 14, 30, 0, -30, -14, -7][i];
+        if (i === 4) continue;
+        el('circle', { cx: x + (i === 0 ? 0 : off), cy: y, r: i === 0 ? 11.5 : 11, fill: T.face[1] }, moons);
+      }
+      el('circle', { cx: C, cy: C, r: R_BAND_IN - 70, fill: 'none', stroke: '#f0cf77', 'stroke-width': 1, opacity: .35, 'stroke-dasharray': '1 9', 'stroke-linecap': 'round' }, g);
+    },
+    sketchRings(g, T) {
+      [R_RING - 3, R_BAND_IN + 3, R_BAND_IN - 4].forEach((r, i) => el('circle', { cx: C + (i - 1) * 1.5, cy: C + 1, r, fill: 'none', stroke: T.line, 'stroke-width': 1, opacity: .55 }, g));
+      const hatch = el('g', { stroke: T.line, 'stroke-width': .8, opacity: .25 }, g);
+      for (let a = 0; a < 360; a += 3) { const [x0, y0] = pt(R_RING - 2, a), [x1, y1] = pt(R_RING + 14, a + 2); el('line', { x1: x0, y1: y0, x2: x1, y2: y1 }, hatch); }
+    },
+    ink(g, T) {
+      el('circle', { cx: C, cy: C, r: R_RING, fill: '#000', opacity: .07, filter: 'url(#paper)' }, g);
+      el('circle', { cx: C, cy: C, r: R_RING + 6, fill: 'none', stroke: '#1c1a18', 'stroke-width': 22, 'stroke-dasharray': `${2 * Math.PI * (R_RING + 6) * .9} 9999`, transform: `rotate(-62 ${C} ${C})`, 'stroke-linecap': 'round', filter: 'url(#brush)', opacity: .92 }, g);
+      el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: '#1c1a18', 'stroke-width': 4, filter: 'url(#brush)', opacity: .7 }, g);
+    },
+    starbursts(g, T) {
+      const r = rng(3);
+      for (let i = 0; i < 9; i++) {
+        const [x, y] = pt(90 + r() * 170, i * 40 + r() * 20), s = 10 + r() * 14;
+        const p = [];
+        for (let k = 0; k < 8; k++) { const rr = k % 2 ? s * .25 : s; const ang = k * Math.PI / 4; p.push(`${k ? 'L' : 'M'}${(x + rr * Math.cos(ang)).toFixed(1)},${(y + rr * Math.sin(ang)).toFixed(1)}`); }
+        el('path', { d: p.join(' ') + 'Z', fill: i % 2 ? '#f2a900' : '#ffffff', opacity: .85 }, g);
+      }
+      for (let i = 0; i < 5; i++) {
+        const [x, y] = pt(150 + r() * 120, i * 72 + 36);
+        el('path', { d: `M${x - 22},${y} Q${x},${y - 30} ${x + 22},${y} Q${x},${y - 14} ${x - 22},${y} Z`, fill: '#c8102e', opacity: .55, transform: `rotate(${r() * 360} ${x} ${y})` }, g);
+      }
+    },
+    grooves(g, T) {
+      const gr = el('g', { fill: 'none', stroke: '#ffffff' }, g);
+      for (let r = 160; r < R_RING; r += 3.2) el('circle', { cx: C, cy: C, r: r.toFixed(1), 'stroke-width': .6, opacity: (r % 19 < 3 ? .09 : .035) }, gr);
+      el('path', { d: sector(150, R_RING, 300, 340), fill: '#ffffff', opacity: .05 }, g);
+      el('path', { d: sector(150, R_RING, 120, 160), fill: '#ffffff', opacity: .05 }, g);
+      el('circle', { cx: C, cy: C, r: 150, fill: T.centerLabel }, g);
+      el('circle', { cx: C, cy: C, r: 142, fill: 'none', stroke: '#fff4e6', 'stroke-width': 1.2, opacity: .6 }, g);
+      el('circle', { cx: C, cy: C, r: 96, fill: 'none', stroke: '#fff4e6', 'stroke-width': .8, opacity: .35 }, g);
+    },
+    road(g, T) {
+      el('path', { d: sector(R_BAND_IN - 58, R_BAND_IN - 4, 0, 359.99), fill: '#2a2a2c' }, g);
+      el('circle', { cx: C, cy: C, r: R_BAND_IN - 31, fill: 'none', stroke: '#f2c230', 'stroke-width': 4, 'stroke-dasharray': '22 16' }, g);
+      el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: '#f4f4f4', 'stroke-width': 3 }, g);
+      el('circle', { cx: C, cy: C, r: R_BAND_IN - 54, fill: 'none', stroke: '#f4f4f4', 'stroke-width': 3 }, g);
+    },
+    cockpit(g, T, slots) {
+      const step = 360 / Math.max(slots.length, 1);
+      const t = el('g', { stroke: '#e8e8e8' }, g);
+      for (let i = 0; i < slots.length * 5; i++) {
+        const a = i * step / 5 - step / 2, major = i % 5 === 0;
+        const [x0, y0] = pt(R_BAND_IN, a), [x1, y1] = pt(R_BAND_IN - (major ? 22 : 10), a);
+        el('line', { x1: x0, y1: y0, x2: x1, y2: y1, 'stroke-width': major ? 3 : 1.4 }, t);
+      }
+      el('path', { d: arcPath(R_BAND_IN - 30, -100, 60), fill: 'none', stroke: '#3fbf5f', 'stroke-width': 6, opacity: .8 }, g);
+      el('path', { d: arcPath(R_BAND_IN - 30, 60, 120), fill: 'none', stroke: '#e6c229', 'stroke-width': 6, opacity: .8 }, g);
+      el('path', { d: arcPath(R_BAND_IN - 30, 120, 150), fill: 'none', stroke: '#e24b3b', 'stroke-width': 6, opacity: .8 }, g);
+      [45, 135, 225, 315].forEach(a => {
+        const [x, y] = pt((R_OUT + R_RING) / 2, a);
+        el('circle', { cx: x, cy: y, r: 8, fill: '#2b2d31', stroke: '#0b0b0c', 'stroke-width': 1.5 }, g);
+        el('line', { x1: x - 5, y1: y - 5, x2: x + 5, y2: y + 5, stroke: '#0b0b0c', 'stroke-width': 2 }, g);
+      });
+    },
+    geometry(g, T) {
+      const cp = el('clipPath', { id: 'geoclip' }, g); el('circle', { cx: C, cy: C, r: R_BAND_IN - 2 }, cp);
+      const gg = el('g', { 'clip-path': 'url(#geoclip)', fill: 'none' }, g);
+      // flower-of-life style circle grid
+      const R = 52;
+      for (let row = -7; row <= 7; row++) for (let col = -7; col <= 7; col++) {
+        const x = C + col * R + (row % 2 ? R / 2 : 0), y = C + row * R * Math.sqrt(3) / 2;
+        if (Math.hypot(x - C, y - C) < R_BAND_IN + R) el('circle', { cx: x, cy: y, r: R, stroke: '#6d5dfc', 'stroke-width': .8, opacity: .16 }, gg);
+      }
+      // nested, turning hexagons
+      let size = 300;
+      for (let i = 0; i < 26; i++) {
+        const p = [];
+        for (let k = 0; k < 6; k++) { const a = k * 60 + i * 7; const [x, y] = pt(size, a); p.push(`${k ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`); }
+        el('path', { d: p.join(' ') + 'Z', stroke: i % 2 ? '#2ec4b6' : '#c9a0ff', 'stroke-width': 1.1, opacity: .35 }, gg);
+        size *= 0.93;
+      }
+    }
+  };
+
+  // ---------------- themes ----------------
+  const BASE = { weight: 600, upper: false, charW: .58, cap: 26, spacing: 0, lineH: 1.12, handStroke: 'none', tagText: null, ornament: 'none', shadow: false, glow: false, rough: false, segments: null, hubShape: 'circle', decorBack: null };
+  const T_ = o => Object.assign({}, BASE, o);
+  const THEMES = {
+    enchanted: T_({
+      label: 'Enchanted', sub: 'night sky, gold, moons',
+      page: 'radial-gradient(circle at 50% 35%, #1b2550, #070a1c 75%)', pageText: '#f3e3b0', chip: 'rgba(243,227,176,.07)', chipBorder: 'rgba(233,200,110,.28)',
+      face: ['#24326a', '#151d45', '#0a0f28'], rim: ['#f6dd8f', '#b98a2e', '#6e4f17', '#f0cf77'], line: 'rgba(240,207,119,.6)', text: '#f3d98a',
+      font: "'Cinzel Decorative', 'Trajan Pro', Georgia, serif", weight: 700, charW: .74, cap: 24, spacing: .5, lineH: 1.1, glow: true,
+      nameFont: "'Cinzel Decorative', Georgia, serif", hand: 'ornate', handStroke: '#2a1f06', tagFill: '#0f1633',
+      hub: ['#fbe8b0', '#b8892f', '#5e4416'], hubStroke: '#2a1f06', titleColor: '#f0cf77', ornament: 'star', shadow: true, decorBack: 'stars',
+      palette: ['#e8b04a', '#7fb3ff', '#ff7b9c', '#8ee3a8', '#c9a0ff', '#ffd36e', '#6fe0e0', '#ff9b5e', '#f2f2f2', '#b8e986']
+    }),
+    classic: T_({
+      label: 'Classic', sub: 'parchment, brass, script',
+      page: 'radial-gradient(circle at 50% 40%, #2b221a, #1d1712 70%)', pageText: '#f3e6c8', chip: 'rgba(243,230,200,.07)', chipBorder: 'rgba(233,207,138,.22)',
+      face: ['#f7ecd2', '#ead7ae', '#cdb07a'], rim: ['#f4dea0', '#c79b45', '#8d6620', '#e5c57a'], line: '#6b4c1c', text: '#3a2a1a',
+      font: "'Dancing Script', 'Apple Chancery', 'Snell Roundhand', cursive", weight: 700, charW: .47, cap: 34, lineH: 1.05,
+      nameFont: "'Dancing Script', 'Apple Chancery', cursive", hand: 'ornate', handStroke: '#2a1a08', tagFill: '#fbf3df',
+      hub: ['#fbe8b0', '#b8892f', '#5e4416'], hubStroke: '#3d2b0c', titleColor: '#5e4416', ornament: 'diamond', shadow: true,
+      palette: ['#8c1c13', '#1f3a68', '#2d5a27', '#5b2a6e', '#9a6a12', '#16615e', '#a4471d', '#3f4a57', '#7a1f4a', '#4b5d16']
+    }),
+    sketch: T_({
+      label: 'Sketch', sub: 'pencil on paper',
+      page: '#ece9e1', pageText: '#2b2b2b', chip: 'rgba(0,0,0,.04)', chipBorder: 'rgba(0,0,0,.14)',
+      face: ['#fbfaf5', '#f7f5ee', '#efece2'], rim: ['#3a3a3a', '#3a3a3a', '#3a3a3a', '#3a3a3a'], rimThin: true, line: '#4a4a4a', text: '#2b2b2b',
+      font: "'Caveat', 'Bradley Hand', 'Segoe Print', cursive", weight: 600, charW: .44, cap: 36, lineH: 1.0, rough: true,
+      nameFont: "'Caveat', 'Bradley Hand', cursive", hand: 'sketch', tagFill: '#fbfaf5',
+      hub: ['#3a3a3a', '#3a3a3a', '#3a3a3a'], hubStroke: '#3a3a3a', titleColor: '#555', ornament: 'tick', decorBack: 'sketchRings',
+      palette: ['#c0392b', '#2e6db4', '#2f8f4e', '#7d3c98', '#d68910', '#148f77', '#ca6f1e', '#566573', '#b03a6f', '#7d8b2a']
+    }),
+    ink: T_({
+      label: 'Ink & Paper', sub: 'brush ring, red seal',
+      page: '#e6dcc6', pageText: '#2a2420', chip: 'rgba(42,36,32,.05)', chipBorder: 'rgba(42,36,32,.16)',
+      face: ['#f7f1e2', '#efe6d0', '#e2d5b6'], rim: ['#1c1a18', '#1c1a18', '#1c1a18', '#1c1a18'], rimNone: true, line: 'rgba(28,26,24,.3)', text: '#1c1a18',
+      font: "'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif", weight: 600, charW: .56, cap: 26, spacing: 1, lineH: 1.15,
+      nameFont: "'Shippori Mincho', 'Yu Mincho', serif", hand: 'brush', tagFill: '#f7f1e2',
+      hub: ['#cf4632', '#b0301f', '#8f2416'], hubStroke: '#8f2416', hubShape: 'seal', titleColor: '#b0301f', decorBack: 'ink',
+      palette: ['#b23a2b', '#2c4f7c', '#3d6b4f', '#6a4c7d', '#b5832a', '#2e6e6a', '#a0522d', '#4a4a4a', '#8c3b5d', '#6b7a2a']
+    }),
+    diner: T_({
+      label: '60s Diner', sub: 'mint, chrome, starbursts',
+      page: 'repeating-conic-gradient(#efe9dc 0 25%, #1d1d1d 0 50%) 0 0 / 64px 64px', pageText: '#ffffff', chip: 'rgba(20,20,20,.88)', chipBorder: 'rgba(255,255,255,.35)',
+      face: ['#a6e6dc', '#86d6ca', '#5fbcaf'], rim: ['#ffffff', '#b9c2c9', '#6d7780', '#e8edf0'], line: '#c8102e', text: '#8b0d1f',
+      font: "'Lobster', 'Brush Script MT', cursive", weight: 400, charW: .48, cap: 32, lineH: 1.0,
+      segments: { fills: ['#fffaf0', '#f6ecd6'], gap: 0 },
+      nameFont: "'Lobster', cursive", hand: 'chunky', handStroke: '#222', tagFill: '#ffffff',
+      hub: ['#ffffff', '#c3cbd1', '#6d7780'], hubStroke: '#444', titleColor: '#8b0d1f', ornament: 'dot', shadow: true, decorBack: 'starbursts',
+      palette: ['#c8102e', '#1d6fb8', '#f2a900', '#2a9d8f', '#6a3d9a', '#e76f51', '#264653', '#d62976', '#3a7d44', '#8d5524']
+    }),
+    vinyl: T_({
+      label: 'Record Player', sub: 'vinyl grooves, centre label',
+      page: '#141414', pageText: '#eeeeee', chip: 'rgba(255,255,255,.05)', chipBorder: 'rgba(255,255,255,.12)',
+      face: ['#262626', '#161616', '#0b0b0b'], rim: ['#3a3a3a', '#111111', '#000000', '#2a2a2a'], line: 'rgba(255,255,255,.14)', text: '#ededed',
+      font: "'Righteous', 'Arial Rounded MT Bold', sans-serif", weight: 400, upper: true, charW: .68, cap: 22, spacing: 1.5, lineH: 1.1,
+      nameFont: "'Righteous', sans-serif", hand: 'slim', tagFill: '#111111', centerLabel: '#d9542b',
+      hub: ['#ffffff', '#cfcfcf', '#7d7d7d'], hubStroke: '#444', hubShape: 'spindle', titleColor: '#fff4e6', decorBack: 'grooves',
+      palette: ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93', '#ff924c', '#52a675', '#4267ac', '#c5ca30', '#f15bb5']
+    }),
+    road: T_({
+      label: 'Road Trip', sub: 'highway signs, asphalt',
+      page: 'linear-gradient(180deg, #f3c27a, #d9734e 55%, #5b2c3e)', pageText: '#fff8ec', chip: 'rgba(40,20,20,.4)', chipBorder: 'rgba(255,255,255,.28)',
+      face: ['#3e3e40', '#313133', '#252527'], rim: ['#e1e1e1', '#9a9a9a', '#5e5e5e', '#cfcfcf'], line: '#ffffff', text: '#ffffff',
+      font: "'Overpass', 'Highway Gothic', 'Arial Narrow', Arial, sans-serif", weight: 700, charW: .56, cap: 26, lineH: 1.1,
+      segments: { fills: ['#0b6e3d', '#0b6e3d'], gap: 1.4, border: '#ffffff' },
+      nameFont: "'Overpass', Arial, sans-serif", hand: 'arrow', handStroke: '#ffffff', tagFill: '#ffffff',
+      hub: ['#ffffff', '#ffffff', '#ffffff'], hubStroke: '#111', hubShape: 'shield', titleColor: '#f2c230', decorBack: 'road', shadow: true,
+      palette: ['#e63946', '#f4a261', '#2a9d8f', '#e9c46a', '#457b9d', '#ff6f91', '#8ecae6', '#bc6c25', '#b5e48c', '#9b5de5']
+    }),
+    cockpit: T_({
+      label: 'Cockpit', sub: 'aircraft instrument',
+      page: '#0c0d0f', pageText: '#e8e8e8', chip: 'rgba(255,255,255,.04)', chipBorder: 'rgba(255,255,255,.1)',
+      face: ['#1d1f22', '#15171a', '#0e0f11'], rim: ['#4a4d52', '#2a2c30', '#141518', '#3c3f44'], line: 'rgba(232,232,232,.5)', text: '#f2f2f2',
+      font: "'B612', 'DIN Alternate', 'Arial Narrow', sans-serif", weight: 700, upper: true, charW: .66, cap: 22, spacing: 1, lineH: 1.1,
+      nameFont: "'B612', sans-serif", hand: 'needle', tagFill: '#15171a',
+      hub: ['#666666', '#2a2a2a', '#111111'], hubStroke: '#000', titleColor: '#9aa0a6', decorBack: 'cockpit',
+      palette: ['#ffffff', '#ffcc00', '#4fc3f7', '#69f0ae', '#ff8a65', '#ea80fc', '#ff5252', '#b0bec5', '#ffd180', '#a7ffeb']
+    }),
+    geometric: T_({
+      label: 'Geometric', sub: 'circles, turning shapes',
+      page: '#0d0d12', pageText: '#ececf4', chip: 'rgba(255,255,255,.05)', chipBorder: 'rgba(255,255,255,.1)',
+      face: ['#17172a', '#111122', '#0a0a16'], rim: ['#c9a0ff', '#6d5dfc', '#2ec4b6', '#c9a0ff'], line: 'rgba(201,160,255,.35)', text: '#ececf4',
+      font: "'Inter', system-ui, sans-serif", weight: 300, upper: true, charW: .7, cap: 22, spacing: 3, lineH: 1.15,
+      nameFont: "'Inter', sans-serif", hand: 'slim', tagFill: '#0a0a16',
+      hub: ['#ffffff', '#c9a0ff', '#6d5dfc'], hubStroke: '#0a0a16', titleColor: '#c9a0ff', decorBack: 'geometry',
+      palette: ['#c9a0ff', '#2ec4b6', '#ff6b9d', '#ffd166', '#6d5dfc', '#06d6a0', '#ef476f', '#8ecae6', '#f4a261', '#e0e0ff']
+    }),
+    modern: T_({
+      label: 'Modern', sub: 'dark, clean, bright',
+      page: 'linear-gradient(160deg, #0b1020, #121a30)', pageText: '#e6ecff', chip: 'rgba(230,236,255,.06)', chipBorder: 'rgba(230,236,255,.14)',
+      face: ['#1b2440', '#151c33', '#10162a'], rim: ['#3a4770', '#232c4a', '#1a2240', '#3a4770'], line: 'rgba(230,236,255,.18)', text: '#e6ecff',
+      font: "'Inter', system-ui, -apple-system, sans-serif", weight: 600, upper: true, charW: .72, cap: 22, spacing: 2, lineH: 1.15,
+      nameFont: "'Inter', system-ui, sans-serif", hand: 'slim', tagFill: '#10162a', tagText: '#ffffff',
+      hub: ['#ffffff', '#c9d3f2', '#8a96bd'], hubStroke: '#0b1020', titleColor: '#9aa8d6', ornament: 'dot',
+      palette: ['#ff6b6b', '#4dabf7', '#51cf66', '#cc5de8', '#fcc419', '#20c997', '#ff922b', '#91a7ff', '#f06595', '#a9e34b']
+    }),
+    minimal: T_({
+      label: 'Minimal', sub: 'white, thin lines',
+      page: '#f2f1ee', pageText: '#1a1a1a', chip: 'rgba(0,0,0,.03)', chipBorder: 'rgba(0,0,0,.08)',
+      face: ['#ffffff', '#ffffff', '#f7f7f5'], rim: ['#1a1a1a', '#1a1a1a', '#1a1a1a', '#1a1a1a'], rimThin: true, line: 'rgba(0,0,0,.12)', text: '#1a1a1a',
+      font: "'Helvetica Neue', Helvetica, Arial, sans-serif", weight: 400, charW: .55, cap: 24, spacing: .5, lineH: 1.15,
+      nameFont: "'Helvetica Neue', Helvetica, Arial, sans-serif", hand: 'line', tagFill: '#ffffff',
+      hub: ['#1a1a1a', '#1a1a1a', '#1a1a1a'], hubStroke: '#1a1a1a', titleColor: '#888',
+      palette: ['#d94841', '#2f6fdb', '#2e9e5b', '#8e44ad', '#e0a100', '#12a39a', '#e8702a', '#5c6b7a', '#c2185b', '#6b8e23']
+    }),
+    retro: T_({
+      label: '70s Retro', sub: 'cream, orange, chunky',
+      page: 'radial-gradient(circle at 50% 40%, #3a2516, #22150c 75%)', pageText: '#f6e7c8', chip: 'rgba(246,231,200,.07)', chipBorder: 'rgba(232,140,48,.3)',
+      face: ['#f8ecd0', '#f1dfb7', '#e3c993'], rim: ['#f2a33a', '#d9662b', '#a8461b', '#e88a30'], line: '#b45a24', text: '#5a2d0c',
+      font: "'Righteous', 'Cooper Black', 'Arial Rounded MT Bold', sans-serif", weight: 400, upper: true, charW: .68, cap: 24, spacing: 1, lineH: 1.1,
+      nameFont: "'Righteous', 'Arial Rounded MT Bold', sans-serif", hand: 'chunky', handStroke: '#3b1d08', tagFill: '#fff6e0',
+      hub: ['#ffd27a', '#e07b2c', '#8a3412'], hubStroke: '#3b1d08', titleColor: '#a8461b', ornament: 'sun', shadow: true,
+      palette: ['#c0392b', '#e67e22', '#d4a017', '#6b8e23', '#1f7a7a', '#8e3b5b', '#7b4a2a', '#3d5a80', '#b5651d', '#556b2f']
+    })
+  };
+
+  // ---------------- settings (this device only) ----------------
+  const KEY = 'weasley-clock-settings';
+  const DEFAULTS = { host: '', port: '8084', topic: 'clock/state', user: 'clock', pass: '', title: '', theme: 'enchanted', labels: 'curved', armNames: 'tag', depth: 'flat', showTime: false, showLegend: true, faceImage: '', order: null, peopleOrder: null, colors: {} };
+  let mem = null;
+  function load() { let s = null; try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {} return Object.assign({}, DEFAULTS, s || mem || {}); }
+  function save(s) { mem = s; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+  let S = load();
+  if (!THEMES[S.theme]) S.theme = 'enchanted';
+  const hasConnection = () => !!S.host;
+  const theme = () => THEMES[S.theme] || THEMES.enchanted;
 
   // ---------------- state ----------------
-  let lastState = null;
-  let angles = {};        // name -> current drawn angle (kept across redraws)
-  let hands = {};         // name -> svg nodes + target
-  let dialKey = '', handsLayer, tagsLayer;
-
+  const svg = document.getElementById('clock'), legend = document.getElementById('legend'), statusEl = document.getElementById('status');
+  let lastState = null, angles = {}, hands = {}, dialKey = '', handsLayer, tagsLayer, timeLayer;
   const displaySlots = () => merge(S.order, (lastState && lastState.slots) || ['Home']);
   const peopleNames = () => ((lastState && lastState.people) || []).map(p => p.name);
   const displayPeople = () => merge(S.peopleOrder, peopleNames());
   function colorOf(name) {
     if (S.colors[name]) return S.colors[name];
-    const T = THEMES[S.theme] || THEMES.classic;
-    const i = peopleNames().indexOf(name);
+    const T = theme(), i = peopleNames().indexOf(name);
     return T.palette[(i < 0 ? 0 : i) % T.palette.length];
   }
 
   // ---------------- dial ----------------
   function applyPageTheme(T) {
     const r = document.documentElement.style;
-    r.setProperty('--page', T.page); r.setProperty('--page-text', T.pageText);
-    r.setProperty('--chip', T.chip); r.setProperty('--chip-border', T.chipBorder); r.setProperty('--name-font', T.nameFont);
+    r.setProperty('--page', T.page); r.setProperty('--page-text', T.pageText); r.setProperty('--chip', T.chip); r.setProperty('--chip-border', T.chipBorder); r.setProperty('--name-font', T.nameFont);
     document.body.style.background = T.page;
+    legend.classList.toggle('hidden', !S.showLegend);
   }
 
   function drawDial(slots) {
-    const T = THEMES[S.theme] || THEMES.classic;
-    const key = JSON.stringify([slots, S.theme, S.labels, S.title]);
+    const T = theme();
+    const key = JSON.stringify([slots, S.theme, S.labels, S.title, S.depth, S.showTime, S.faceImage, S.armNames, S.showLegend]);
     if (key === dialKey) return;
     dialKey = key;
     applyPageTheme(T);
     svg.innerHTML = '';
-    svg.style.filter = T.shadow ? 'drop-shadow(0 1.5vmin 3vmin rgba(0,0,0,.55))' : 'drop-shadow(0 .6vmin 1.6vmin rgba(0,0,0,.18))';
+    const deep = S.depth === '3d';
+    svg.style.filter = (T.shadow || deep) ? 'drop-shadow(0 1.5vmin 3vmin rgba(0,0,0,.55))' : 'drop-shadow(0 .6vmin 1.6vmin rgba(0,0,0,.18))';
     const defs = el('defs', {}, svg);
     defs.innerHTML = `
       <radialGradient id="face" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="${T.face[0]}"/><stop offset=".7" stop-color="${T.face[1]}"/><stop offset="1" stop-color="${T.face[2]}"/></radialGradient>
       <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">${T.rim.map((c, i) => `<stop offset="${i / (T.rim.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient>
       <radialGradient id="hub" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${T.hub[0]}"/><stop offset=".5" stop-color="${T.hub[1]}"/><stop offset="1" stop-color="${T.hub[2]}"/></radialGradient>
-      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="${T.shadow ? .35 : .12}"/></filter>`;
+      <radialGradient id="bevel" cx="50%" cy="50%" r="50%"><stop offset=".86" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+      <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="${deep ? 9 : 0}" dy="${deep ? 14 : 3}" stdDeviation="${deep ? 7 : 4}" flood-color="#000" flood-opacity="${deep ? .5 : (T.shadow ? .35 : .12)}"/></filter>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="4.5"/></filter>
+      <filter id="brush" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".02 .09" numOctaves="3" seed="9"/><feDisplacementMap in="SourceGraphic" scale="12"/></filter>
+      <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="2"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>`;
 
-    if (T.rimThin) {
-      el('circle', { cx: C, cy: C, r: R_RING + 6, fill: 'url(#face)', stroke: T.rim[0], 'stroke-width': 4 }, svg);
-    } else {
-      el('circle', { cx: C, cy: C, r: R_OUT, fill: 'url(#rim)' }, svg);
-      el('circle', { cx: C, cy: C, r: R_OUT - 7, fill: 'none', stroke: 'rgba(0,0,0,.35)', 'stroke-width': 2 }, svg);
-      el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#face)', stroke: T.line, 'stroke-width': 3 }, svg);
+    const root = el('g', T.rough ? { filter: 'url(#rough)' } : {}, svg);
+
+    // body of the clock
+    if (T.rimNone) el('circle', { cx: C, cy: C, r: R_RING + 14, fill: 'url(#face)' }, root);
+    else if (T.rimThin) el('circle', { cx: C, cy: C, r: R_RING + 6, fill: 'url(#face)', stroke: T.rim[0], 'stroke-width': 4 }, root);
+    else {
+      el('circle', { cx: C, cy: C, r: R_OUT, fill: 'url(#rim)' }, root);
+      el('circle', { cx: C, cy: C, r: R_OUT - 7, fill: 'none', stroke: 'rgba(0,0,0,.35)', 'stroke-width': 2 }, root);
+      el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#face)', stroke: T.line, 'stroke-width': 3 }, root);
     }
-    el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: T.line, 'stroke-width': T.rimThin ? 1.5 : 2.5 }, svg);
-    if (T.ornament === 'diamond') el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: T.line, 'stroke-width': 1, 'stroke-dasharray': '2 6' }, svg);
+    if (S.faceImage) {
+      const cp = el('clipPath', { id: 'faceclip' }, defs); el('circle', { cx: C, cy: C, r: R_RING }, cp);
+      el('image', { href: S.faceImage, x: C - R_RING, y: C - R_RING, width: R_RING * 2, height: R_RING * 2, preserveAspectRatio: 'xMidYMid slice', 'clip-path': 'url(#faceclip)' }, root);
+    }
+    if (T.decorBack && !S.faceImage) deco[T.decorBack](el('g', {}, root), T, slots);
     if (T.ornament === 'sun') {
-      const sun = el('g', { opacity: .18 }, svg);
+      const sun = el('g', { opacity: .18 }, root);
       for (let i = 0; i < 48; i++) { const [x, y] = pt(R_BAND_IN - 4, i * 7.5); el('line', { x1: C, y1: C, x2: x, y2: y, stroke: T.line, 'stroke-width': i % 2 ? 2 : 5 }, sun); }
     }
 
-    const n = Math.max(slots.length, 1), step = 360 / n, band = el('g', {}, svg);
+    const n = Math.max(slots.length, 1), step = 360 / n, band = el('g', {}, root);
+    // band backing: theme segments, or a soft tint over a custom picture
+    if (T.segments) slots.forEach((_, i) => {
+      const g = T.segments.gap || 0;
+      el('path', { d: sector(R_BAND_IN + (g ? 4 : 0), R_RING - (g ? 4 : 0), i * step - step / 2 + g / 2, i * step + step / 2 - g / 2), fill: T.segments.fills[i % 2], stroke: T.segments.border || 'none', 'stroke-width': T.segments.border ? 2.5 : 0 }, band);
+    });
+    else if (S.faceImage) el('path', { d: sector(R_BAND_IN, R_RING, 0, 359.99), fill: T.face[1], opacity: .72 }, band);
+    el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: T.line, 'stroke-width': T.rimThin ? 1.5 : 2.5 }, root);
+    if (T.ornament === 'diamond') el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: T.line, 'stroke-width': 1, 'stroke-dasharray': '2 6' }, root);
+
     const pad = Math.min(step * 0.06, 2);
     const fmt = s => T.upper ? s.toUpperCase() : s;
-
-    // work out lines + a font size for each label, then keep sizes within 35% of the smallest
     const specs = slots.map(label => {
       const text = fmt(label);
-      let lines;
-      if (S.labels === 'curved') lines = twoLines(text);
-      else lines = (text.length > 9 && text.includes(' ')) ? twoLines(text) : [text];
+      const lines = S.labels === 'curved' ? twoLines(text) : ((text.length > 9 && text.includes(' ')) ? twoLines(text) : [text]);
       const longest = Math.max(...lines.map(l => l.length));
       let fit;
       if (S.labels === 'curved') {
         const r = lines.length === 1 ? R_MID : R_MID - 18;
-        const arc = 2 * Math.PI * r * (step - 2 * pad) / 360;
+        const arc = 2 * Math.PI * r * (step - 2 * pad - (T.segments && T.segments.gap ? 2 : 0)) / 360;
         fit = Math.min((arc - T.spacing * longest) / (longest * T.charW + 0.6), (R_RING - R_BAND_IN - 20) / (lines.length * T.lineH * 1.15));
       } else {
-        const length = R_RING - R_BAND_IN - 22;
-        const width = 2 * Math.PI * (R_BAND_IN + 14) * step / 360;
-        fit = Math.min((length - T.spacing * longest) / (longest * T.charW + 0.4), width * 0.92 / (lines.length * T.lineH * 1.1));
+        const length = R_RING - R_BAND_IN - 22, width = 2 * Math.PI * (R_BAND_IN + 14) * step / 360;
+        fit = Math.min((length - T.spacing * longest) / (longest * T.charW + 0.4), width * 0.9 / (lines.length * T.lineH * 1.1));
       }
       return { lines, fit };
     });
     const smallest = Math.min(...specs.map(s => s.fit));
     specs.forEach(s => { s.fs = Math.max(11, Math.min(s.fit, smallest * 1.35, T.cap)); });
+    const labelLayer = el('g', T.glow ? { filter: 'url(#glow)' } : {}, band);
 
     slots.forEach((label, i) => {
       const a = i * step, a0 = a - step / 2, a1 = a + step / 2;
-      const [x0, y0] = pt(T.rimThin ? R_BAND_IN : R_BAND_IN, a0), [x1, y1] = pt(R_RING, a0);
-      el('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: T.line, 'stroke-width': T.rimThin ? 1 : 1.5 }, band);
+      if (!(T.segments && T.segments.gap)) { const [x0, y0] = pt(R_BAND_IN, a0), [x1, y1] = pt(R_RING, a0); el('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: T.line, 'stroke-width': T.rimThin ? 1 : 1.5 }, band); }
       const [sx, sy] = pt(R_BAND_IN - 18, a);
       if (T.ornament === 'diamond') el('path', { d: `M${sx},${sy - 7} L${sx + 5},${sy} L${sx},${sy + 7} L${sx - 5},${sy} Z`, fill: T.line, transform: `rotate(${a} ${sx} ${sy})` }, band);
       if (T.ornament === 'dot' || T.ornament === 'sun') el('circle', { cx: sx, cy: sy, r: 4, fill: T.line }, band);
+      if (T.ornament === 'tick') { const [tx, ty] = pt(R_BAND_IN - 28, a); el('line', { x1: sx, y1: sy, x2: tx, y2: ty, stroke: T.line, 'stroke-width': 2 }, band); }
+      if (T.ornament === 'star') { const p = []; for (let k = 0; k < 8; k++) { const rr = k % 2 ? 3 : 9, ang = k * Math.PI / 4 + rad(a); p.push(`${k ? 'L' : 'M'}${(sx + rr * Math.cos(ang)).toFixed(1)},${(sy + rr * Math.sin(ang)).toFixed(1)}`); } el('path', { d: p.join(' ') + 'Z', fill: '#f6dd8f' }, labelLayer); }
 
       const { lines, fs } = specs[i];
-      const textAttrs = { 'font-size': fs.toFixed(1), fill: T.text, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, 'dominant-baseline': 'middle', 'text-anchor': 'middle' };
+      const attrs = { 'font-size': fs.toFixed(1), fill: T.text, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, 'dominant-baseline': 'middle', 'text-anchor': 'middle' };
       if (S.labels === 'curved') {
-        const bottom = a > 90 && a < 270;
-        const gap = fs * T.lineH * 0.55;
+        const bottom = a > 90 && a < 270, gap = fs * T.lineH * 0.55;
         const radii = lines.length === 1 ? [R_MID] : (bottom ? [R_MID - gap, R_MID + gap] : [R_MID + gap, R_MID - gap]);
         lines.forEach((text, j) => {
           const id = `lab${i}_${j}`;
           el('path', { id, d: arcPath(radii[j], a0 + pad, a1 - pad, bottom), fill: 'none' }, defs);
-          const t = el('text', textAttrs, band);
-          el('textPath', { href: `#${id}`, startOffset: '50%' }, t).textContent = text;
+          el('textPath', { href: `#${id}`, startOffset: '50%' }, el('text', attrs, labelLayer)).textContent = text;
         });
       } else {
-        const left = a > 180 && a < 360;
-        const [cx, cy] = pt(R_MID + 4, a);
-        const g = el('g', { transform: `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${(left ? a + 90 : a - 90).toFixed(2)})` }, band);
-        lines.forEach((text, j) => {
-          const t = el('text', Object.assign({}, textAttrs, { x: 0, y: ((j - (lines.length - 1) / 2) * fs * T.lineH).toFixed(1) }), g);
-          t.textContent = text;
-        });
+        const left = a > 180 && a < 360, [cx, cy] = pt(R_MID + 4, a);
+        const g = el('g', { transform: `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${(left ? a + 90 : a - 90).toFixed(2)})` }, labelLayer);
+        lines.forEach((text, j) => { el('text', Object.assign({}, attrs, { x: 0, y: ((j - (lines.length - 1) / 2) * fs * T.lineH).toFixed(1) }), g).textContent = text; });
       }
     });
 
-    const title = el('text', { x: C, y: C + 95, 'text-anchor': 'middle', 'font-size': T.upper ? 26 : 34, fill: T.titleColor, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, opacity: .9 }, svg);
+    if (deep) el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#bevel)' }, root);
+    const title = el('text', { x: C, y: C + 95, 'text-anchor': 'middle', 'font-size': T.upper ? 26 : 34, fill: T.titleColor, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, opacity: .92 }, svg);
+    if (T.glow) title.setAttribute('filter', 'url(#glow)');
     title.textContent = S.title || '';
+
+    // real time hands sit under the family hands
+    timeLayer = el('g', { filter: 'url(#soft)' }, svg);
+    if (S.showTime) {
+      for (let h = 0; h < 12; h++) { const [x, y] = pt(R_BAND_IN - 62, h * 30); el('circle', { cx: x, cy: y, r: h % 3 ? 2.5 : 5, fill: T.text, opacity: .55 }, timeLayer); }
+      el('path', { class: 'hourHand', d: `M${C - 6},${C + 24} L${C - 4},${C - 150} L${C},${C - 168} L${C + 4},${C - 150} L${C + 6},${C + 24} Z`, fill: T.text, opacity: .7 }, timeLayer);
+      el('path', { class: 'minuteHand', d: `M${C - 4},${C + 30} L${C - 2.5},${C - 228} L${C},${C - 244} L${C + 2.5},${C - 228} L${C + 4},${C + 30} Z`, fill: T.text, opacity: .7 }, timeLayer);
+      updateTime();
+    }
+
     handsLayer = el('g', { filter: 'url(#soft)' }, svg);
-    tagsLayer = el('g', {}, svg);
-    el('circle', { cx: C, cy: C, r: T.hand === 'line' ? 12 : 30, fill: 'url(#hub)', stroke: T.hubStroke, 'stroke-width': 2 }, svg);
-    if (T.hand !== 'line') el('circle', { cx: C, cy: C, r: 9, fill: T.hubStroke }, svg);
+    tagsLayer = el('g', { filter: S.depth === '3d' ? 'url(#soft)' : 'none' }, svg);
+
+    // hub
+    if (T.hubShape === 'seal') {
+      el('rect', { x: C - 30, y: C - 30, width: 60, height: 60, rx: 6, fill: 'url(#hub)', filter: 'url(#brush)' }, svg);
+      el('rect', { x: C - 22, y: C - 22, width: 44, height: 44, rx: 3, fill: 'none', stroke: '#f7f1e2', 'stroke-width': 2, opacity: .7 }, svg);
+    } else if (T.hubShape === 'shield') {
+      el('path', { d: `M${C - 34},${C - 32} Q${C},${C - 44} ${C + 34},${C - 32} L${C + 30},${C + 4} Q${C + 24},${C + 30} ${C},${C + 40} Q${C - 24},${C + 30} ${C - 30},${C + 4} Z`, fill: '#ffffff', stroke: '#111', 'stroke-width': 3 }, svg);
+      el('circle', { cx: C, cy: C, r: 7, fill: '#111' }, svg);
+    } else if (T.hubShape === 'spindle') {
+      el('circle', { cx: C, cy: C, r: 15, fill: 'url(#hub)', stroke: T.hubStroke, 'stroke-width': 1.5 }, svg);
+    } else {
+      el('circle', { cx: C, cy: C, r: T.hand === 'line' || T.hand === 'sketch' ? 12 : 30, fill: 'url(#hub)', stroke: T.hubStroke, 'stroke-width': 2 }, svg);
+      if (T.hand !== 'line' && T.hand !== 'sketch') el('circle', { cx: C, cy: C, r: 9, fill: T.hubStroke }, svg);
+    }
     hands = {};
   }
 
+  function updateTime() {
+    if (!S.showTime || !timeLayer) return;
+    const d = new Date(), m = d.getMinutes() + d.getSeconds() / 60, h = (d.getHours() % 12) + m / 60;
+    const hh = timeLayer.querySelector('.hourHand'), mh = timeLayer.querySelector('.minuteHand');
+    if (hh) hh.setAttribute('transform', `rotate(${(h * 30).toFixed(2)} ${C} ${C})`);
+    if (mh) mh.setAttribute('transform', `rotate(${(m * 6).toFixed(2)} ${C} ${C})`);
+  }
+  setInterval(updateTime, 5000);
+
   // ---------------- hands ----------------
   function handShape(T, len) {
+    if (S.armNames === 'along') {
+      const w = T.hand === 'line' || T.hand === 'sketch' ? 13 : 16;
+      return `M${C - w},${C - 26} L${C - w},${C - len + 26} L${C},${C - len} L${C + w},${C - len + 26} L${C + w},${C - 26} Q${C},${C - 12} ${C - w},${C - 26} Z`;
+    }
     switch (T.hand) {
       case 'slim': return `M${C - 4},${C + 30} L${C - 4},${C - len + 4} Q${C},${C - len - 4} ${C + 4},${C - len + 4} L${C + 4},${C + 30} Z`;
       case 'line': return `M${C - 1.5},${C + 20} L${C - 1.5},${C - len} L${C + 1.5},${C - len} L${C + 1.5},${C + 20} Z`;
+      case 'sketch': return `M${C - 2},${C + 18} L${C - 1},${C - len + 22} L${C - 12},${C - len + 26} L${C},${C - len} L${C + 12},${C - len + 26} L${C + 1},${C - len + 22} L${C + 2},${C + 18} Z`;
       case 'chunky': return `M${C - 11},${C + 40} L${C - 9},${C - len + 18} Q${C},${C - len - 6} ${C + 9},${C - len + 18} L${C + 11},${C + 40} Q${C},${C + 52} ${C - 11},${C + 40} Z`;
+      case 'brush': return `M${C - 5},${C + 30} Q${C - 9},${C - len * .5} ${C - 1},${C - len} Q${C + 3},${C - len * .5} ${C + 5},${C + 30} Z`;
+      case 'arrow': return `M${C - 8},${C + 30} L${C - 8},${C - len + 34} L${C - 22},${C - len + 34} L${C},${C - len} L${C + 22},${C - len + 34} L${C + 8},${C - len + 34} L${C + 8},${C + 30} Z`;
+      case 'needle': return `M${C - 6},${C + 50} L${C - 3},${C - len + 10} L${C},${C - len} L${C + 3},${C - len + 10} L${C + 6},${C + 50} Z`;
       default: return `M${C - 7},${C + 38} L${C - 3.5},${C - len + 46} L${C - 13},${C - len + 30} L${C},${C - len} L${C + 13},${C - len + 30} L${C + 3.5},${C - len + 46} L${C + 7},${C + 38} Z`;
     }
   }
 
   function render() {
-    if (!lastState) { drawDial(displaySlots()); return; }
-    const T = THEMES[S.theme] || THEMES.classic;
     const slots = displaySlots();
     drawDial(slots);
-    const n = slots.length, step = 360 / n;
-    const people = lastState.people || [];
-    const order = displayPeople();
-    const haSlots = lastState.slots || [];
+    if (!lastState) return;
+    const T = theme(), n = slots.length, step = 360 / n;
+    const people = lastState.people || [], order = displayPeople(), haSlots = lastState.slots || [];
     const lostIdx = slots.findIndex(x => norm(x) === 'lost');
+    const along = S.armNames === 'along';
 
-    // where each person points, using this screen's place order
     const groups = {};
     people.forEach(p => {
       let idx = slots.indexOf(p.place);
@@ -372,7 +624,7 @@
     const seen = new Set();
     Object.entries(groups).forEach(([idx, list]) => {
       list.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
-      const k = list.length, spread = Math.min(step * 0.7, 9 * (k - 1));
+      const k = list.length, spread = Math.min(step * .9, (along ? 13 : 11) * (k - 1));
       list.forEach((p, i) => {
         const rank = order.indexOf(p.name);
         const len = order.length > 1 ? L_MAX - rank * (L_MAX - L_MIN) / (order.length - 1) : L_MAX;
@@ -383,24 +635,37 @@
         if (!h) {
           const g = el('g', {}, handsLayer);
           const path = el('path', {}, g);
+          const armText = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': T.nameFont, 'font-weight': T.weight >= 600 ? 700 : 600 }, g);
           const tag = el('g', {}, tagsLayer);
           const circle = el('circle', { r: 34 }, tag);
-          const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': T.nameFont, 'font-weight': T.hand === 'ornate' ? 700 : 600 }, tag);
-          h = hands[p.name] = { g, path, tag, circle, t };
+          const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': T.nameFont, 'font-weight': T.weight >= 600 ? 700 : 600 }, tag);
+          h = hands[p.name] = { g, path, armText, tag, circle, t };
           if (angles[p.name] === undefined) angles[p.name] = target - 40;
         }
         h.target = target; h.len = len;
         h.path.setAttribute('d', handShape(T, len));
         h.path.setAttribute('fill', color);
         h.path.setAttribute('stroke', T.handStroke); h.path.setAttribute('stroke-width', T.handStroke === 'none' ? 0 : 1.5);
-        h.circle.setAttribute('fill', T.tagText ? color : T.tagFill);
-        h.circle.setAttribute('stroke', T.tagText ? T.tagFill : color);
-        h.circle.setAttribute('stroke-width', T.hand === 'line' ? 3 : 5);
-        h.t.setAttribute('fill', T.tagText || color);
-        const nm = p.name.length > 7 ? p.name.slice(0, 6) + '.' : p.name;
-        h.t.textContent = nm;
-        const base = T.hand === 'ornate' ? 21 : 15;
-        h.t.setAttribute('font-size', (nm.length > 5 ? base * 0.82 : base).toFixed(1));
+        if (T.rough) h.path.setAttribute('filter', 'url(#rough)');
+        if (along) {
+          h.tag.style.display = 'none'; h.armText.style.display = '';
+          h.armText.textContent = p.name;
+          const room = len - 70, fs = Math.max(11, Math.min(T.hand === 'ornate' || T.hand === 'sketch' ? 26 : 20, room / (p.name.length * T.charW * (T.upper ? 1 : 1.05) + 0.5)));
+          h.armText.setAttribute('font-size', fs.toFixed(1));
+          h.armText.setAttribute('fill', textOn(color));
+          h.armText.setAttribute('letter-spacing', T.upper ? 1 : 0);
+          h.mid = 26 + (len - 26 - 26) / 2;
+        } else {
+          h.tag.style.display = ''; h.armText.style.display = 'none';
+          h.circle.setAttribute('fill', T.tagText ? color : T.tagFill);
+          h.circle.setAttribute('stroke', T.tagText ? T.tagFill : color);
+          h.circle.setAttribute('stroke-width', T.hand === 'line' ? 3 : 5);
+          h.t.setAttribute('fill', T.tagText || color);
+          const nm = p.name.length > 7 ? p.name.slice(0, 6) + '.' : p.name;
+          h.t.textContent = nm;
+          const base = (T.hand === 'ornate' && T.charW < .6) || T.hand === 'sketch' ? 22 : 15;
+          h.t.setAttribute('font-size', (nm.length > 5 ? base * 0.82 : base).toFixed(1));
+        }
       });
     });
     for (const name in hands) if (!seen.has(name)) { hands[name].g.remove(); hands[name].tag.remove(); delete hands[name]; }
@@ -411,15 +676,15 @@
       const d = document.createElement('div'); d.className = 'who';
       d.innerHTML = '<div class="dot"></div><div><b></b><br><span></span></div>';
       d.querySelector('.dot').style.background = colorOf(name);
-      d.querySelector('b').textContent = name;
-      d.querySelector('span').textContent = p.place;
+      d.querySelector('b').textContent = name; d.querySelector('span').textContent = p.place;
       legend.appendChild(d);
     });
-    animate();
+    animate(true);
   }
 
   let animating = false;
-  function animate() {
+  function animate(force) {
+    if (animating && !force) return;
     if (animating) return;
     animating = true;
     const tick = () => {
@@ -431,8 +696,14 @@
         if (Math.abs(diff) > 0.05) { a += diff * 0.07 + Math.sign(diff) * 0.05; moving = true; } else a = h.target;
         angles[name] = a;
         h.g.setAttribute('transform', `rotate(${a.toFixed(2)} ${C} ${C})`);
-        const [x, y] = pt(h.len - 72, a);
-        h.tag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+        if (S.armNames === 'along') {
+          const na = ((a % 360) + 360) % 360, flip = na > 180;
+          h.armText.setAttribute('x', C); h.armText.setAttribute('y', (C - h.mid).toFixed(1));
+          h.armText.setAttribute('transform', `rotate(${flip ? 90 : -90} ${C} ${(C - h.mid).toFixed(1)})`);
+        } else {
+          const [x, y] = pt(h.len - 72, a);
+          h.tag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+        }
       }
       if (moving) requestAnimationFrame(tick); else animating = false;
     };
@@ -441,11 +712,7 @@
 
   // ---------------- status ----------------
   let lastUpdated = null, connected = false, lastError = '', demoMode = false;
-  function ago(d) {
-    const s = Math.round((Date.now() - d) / 1000);
-    if (s < 60) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' min ago';
-    if (s < 86400) return Math.round(s / 3600) + ' h ago'; return Math.round(s / 86400) + ' d ago';
-  }
+  function ago(d) { const s = Math.round((Date.now() - d) / 1000); if (s < 60) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' min ago'; if (s < 86400) return Math.round(s / 3600) + ' h ago'; return Math.round(s / 86400) + ' d ago'; }
   function renderStatus() {
     const parts = [demoMode ? 'Preview (sample data)' : connected ? 'Connected' : (lastError || 'Connecting…')];
     if (lastUpdated) parts.push('updated ' + ago(lastUpdated));
@@ -453,10 +720,8 @@
     statusEl.classList.toggle('bad', !connected && !demoMode);
   }
   setInterval(renderStatus, 15000);
-
   function receive(state) {
-    lastState = state;
-    lastUpdated = state.updated ? new Date(state.updated) : new Date();
+    lastState = state; lastUpdated = state.updated ? new Date(state.updated) : new Date();
     render(); renderStatus();
     if (panel.classList.contains('open')) renderLists();
   }
@@ -466,28 +731,22 @@
   const str = s => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
   const remLen = n => { const o = []; do { let b = n % 128; n = Math.floor(n / 128); if (n > 0) b |= 128; o.push(b); } while (n > 0); return o; };
   const packet = (first, body) => new Uint8Array([first, ...remLen(body.length), ...body]);
-  let ws = null, buf = new Uint8Array(0), pingTimer = null, pongTimer = null, retryDelay = 2000, retryTimer = null;
-
+  let ws = null, buf = new Uint8Array(0), pingTimer = null, pongTimer = null, retryDelay = 2000, retryTimer = null, demoTimer = null;
   function stopSocket() { clearTimeout(retryTimer); clearInterval(pingTimer); clearTimeout(pongTimer); if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; } }
   function connect() {
     if (!hasConnection()) { openPanel('conn'); return; }
-    demoMode = false; clearInterval(demoTimer);
-    stopSocket();
+    demoMode = false; clearInterval(demoTimer); stopSocket();
     lastError = 'Connecting…'; connected = false; renderStatus();
     const host = S.host.replace(/^\w+:\/\//, '').replace(/\/.*$/, '').replace(/:\d+$/, '');
     try { ws = new WebSocket(`wss://${host}:${S.port || 8084}/mqtt`, ['mqtt']); } catch (e) { lastError = 'Bad broker address'; renderStatus(); return; }
     ws.binaryType = 'arraybuffer'; buf = new Uint8Array(0);
-    ws.onopen = () => {
-      const id = 'weasley-screen-' + Math.random().toString(36).slice(2, 10);
-      ws.send(packet(0x10, [...str('MQTT'), 4, 0xC2, 0, 60, ...str(id), ...str(S.user || ''), ...str(S.pass || '')]));
-    };
+    ws.onopen = () => { const id = 'weasley-screen-' + Math.random().toString(36).slice(2, 10); ws.send(packet(0x10, [...str('MQTT'), 4, 0xC2, 0, 60, ...str(id), ...str(S.user || ''), ...str(S.pass || '')])); };
     ws.onmessage = ev => { const c = new Uint8Array(ev.data), nb = new Uint8Array(buf.length + c.length); nb.set(buf); nb.set(c, buf.length); buf = nb; parse(); };
     ws.onerror = () => { if (!connected) lastError = 'Connection error'; };
     ws.onclose = () => {
       connected = false; clearInterval(pingTimer); clearTimeout(pongTimer);
       if (!lastError || lastError === 'Connecting…') lastError = 'Disconnected, retrying…';
-      renderStatus();
-      retryTimer = setTimeout(connect, retryDelay); retryDelay = Math.min(retryDelay * 2, 60000);
+      renderStatus(); retryTimer = setTimeout(connect, retryDelay); retryDelay = Math.min(retryDelay * 2, 60000);
     };
   }
   function parse() {
@@ -496,8 +755,7 @@
       do { if (i >= buf.length) return; b = buf[i++]; len += (b & 127) * mult; mult *= 128; } while (b & 128);
       if (buf.length < i + len) return;
       const type = buf[0] >> 4, flags = buf[0] & 15, body = buf.slice(i, i + len);
-      buf = buf.slice(i + len);
-      handle(type, flags, body);
+      buf = buf.slice(i + len); handle(type, flags, body);
     }
   }
   function handle(type, flags, body) {
@@ -508,11 +766,9 @@
       ws.send(packet(0x82, [0, 1, ...str(S.topic || 'clock/state'), 0]));
       clearInterval(pingTimer);
       pingTimer = setInterval(() => { if (!ws || ws.readyState !== 1) return; ws.send(new Uint8Array([0xC0, 0])); pongTimer = setTimeout(() => { try { ws.close(); } catch (e) {} }, 15000); }, 30000);
-    } else if (type === 9) {
-      if (body[2] === 0x80) { lastError = 'Not allowed to read ' + (S.topic || 'clock/state'); connected = false; renderStatus(); }
-    } else if (type === 13) {
-      clearTimeout(pongTimer);
-    } else if (type === 3) {
+    } else if (type === 9) { if (body[2] === 0x80) { lastError = 'Not allowed to read ' + (S.topic || 'clock/state'); connected = false; renderStatus(); } }
+    else if (type === 13) clearTimeout(pongTimer);
+    else if (type === 3) {
       const qos = (flags >> 1) & 3, tl = (body[0] << 8) | body[1];
       let pos = 2 + tl;
       if (qos > 0) { const id = [body[pos], body[pos + 1]]; pos += 2; if (qos === 1) ws.send(new Uint8Array([0x40, 2, ...id])); }
@@ -521,38 +777,38 @@
   }
 
   // ---------------- preview ----------------
-  let demoTimer = null;
   function startDemo() {
     stopSocket(); demoMode = true;
     const slots = (lastState && lastState.slots) || ['Home', 'M+Z Home', 'Burgin Home', 'E+J Home', 'UMich', 'MSU', 'Burgin Up North Cottage', 'Burgin Down South Cottage', 'Kellys Work', 'Justins Work', 'Maddies Work', 'Zachs Work', 'Emilys Work', 'Jacobs Work', 'Katies Work', 'Camdens Work', 'Traveling', 'Lost!'];
-    const names = (lastState && lastState.people && lastState.people.length ? lastState.people.map(p => p.name) : ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie']);
-    const pick = () => ({ slots, people: names.map(n => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: n, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
-    receive(pick());
-    clearInterval(demoTimer); demoTimer = setInterval(() => receive(pick()), 6000);
+    const names = lastState && lastState.people && lastState.people.length ? lastState.people.map(p => p.name) : ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie'];
+    const pick = () => ({ slots, people: names.map(nm => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: nm, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
+    receive(pick()); clearInterval(demoTimer); demoTimer = setInterval(() => receive(pick()), 6000);
   }
 
   // ---------------- settings panel ----------------
-  const panel = document.getElementById('panel'), msg = document.getElementById('msg');
-  const $ = id => document.getElementById(id);
+  const panel = document.getElementById('panel'), msg = document.getElementById('msg'), $ = id => document.getElementById(id);
   function showTab(name) {
     document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === name));
   }
   document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
-
   const themeBox = $('themeChoices');
   Object.entries(THEMES).forEach(([k, T]) => {
-    const b = document.createElement('button'); b.dataset.v = k;
-    b.innerHTML = `${T.label}<small>${T.sub}</small>`;
-    b.onclick = () => { S.theme = k; save(S); syncChoices(); dialKey = ''; render(); };
+    const b = document.createElement('button'); b.dataset.v = k; b.innerHTML = `${T.label}<small>${T.sub}</small>`;
+    b.onclick = () => { S.theme = k; save(S); syncChoices(); dialKey = ''; hands = {}; render(); };
     themeBox.appendChild(b);
   });
-  document.querySelectorAll('#labelChoices button').forEach(b => b.onclick = () => { S.labels = b.dataset.v; save(S); syncChoices(); dialKey = ''; render(); });
+  document.querySelectorAll('.choices[data-key] button').forEach(b => b.onclick = () => {
+    const key = b.parentElement.dataset.key; let v = b.dataset.v;
+    if (v === 'true') v = true; if (v === 'false') v = false;
+    S[key] = v; save(S); syncChoices(); dialKey = ''; render();
+  });
   function syncChoices() {
     themeBox.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === S.theme));
-    document.querySelectorAll('#labelChoices button').forEach(b => b.classList.toggle('on', b.dataset.v === S.labels));
+    document.querySelectorAll('.choices[data-key]').forEach(box => box.querySelectorAll('button').forEach(b => b.classList.toggle('on', String(S[box.dataset.key]) === b.dataset.v)));
   }
   $('title').oninput = e => { S.title = e.target.value; save(S); dialKey = ''; render(); };
+  $('faceImage').onchange = e => { S.faceImage = e.target.value.trim(); save(S); dialKey = ''; render(); };
 
   function moveIn(arr, i, d) { const j = i + d; if (j < 0 || j >= arr.length) return arr; const a = arr.slice(); [a[i], a[j]] = [a[j], a[i]]; return a; }
   function renderLists() {
@@ -573,9 +829,8 @@
     if (!order.length) ppl.innerHTML = '<div class="item">Connect (or tap Preview) to see people.</div>';
     order.forEach((name, i) => {
       const row = document.createElement('div'); row.className = 'item';
-      row.innerHTML = `<input type="color"><span class="grow"></span><span class="num" title="Arm length rank">${i === 0 ? 'longest' : i === order.length - 1 ? 'shortest' : ''}</span><button title="Longer arm">↑</button><button title="Shorter arm">↓</button>`;
+      row.innerHTML = `<input type="color"><span class="grow"></span><span class="num" style="width:4.5em">${i === 0 ? 'longest' : i === order.length - 1 ? 'shortest' : ''}</span><button title="Longer arm">↑</button><button title="Shorter arm">↓</button>`;
       row.querySelector('.grow').textContent = name;
-      row.querySelector('.num').style.width = '4.5em';
       const c = row.querySelector('input'); c.value = colorOf(name);
       c.oninput = () => { S.colors = Object.assign({}, S.colors, { [name]: c.value }); save(S); render(); };
       const [up, down] = row.querySelectorAll('button');
@@ -586,10 +841,9 @@
   }
   $('resetPlaces').onclick = () => { S.order = null; save(S); renderLists(); render(); };
   $('resetPeople').onclick = () => { S.peopleOrder = null; S.colors = {}; save(S); renderLists(); render(); };
-
   function openPanel(tab) {
     S = load();
-    for (const k of ['host', 'port', 'topic', 'user', 'pass', 'title']) $(k).value = S[k] || '';
+    for (const k of ['host', 'port', 'topic', 'user', 'pass', 'title', 'faceImage']) $(k).value = S[k] || '';
     syncChoices(); renderLists(); msg.textContent = '';
     if (tab) showTab(tab);
     panel.classList.add('open');
@@ -603,14 +857,12 @@
     save(S); panel.classList.remove('open'); connect();
   };
   $('demo').onclick = () => { panel.classList.remove('open'); startDemo(); };
-
-  // setup codes: copy look/order/colors/address to another device (no password)
   $('copyCode').onclick = async () => {
     const { pass, ...rest } = S;
     const code = btoa(unescape(encodeURIComponent(JSON.stringify(rest))));
     $('code').value = code; $('code').select();
     try { await navigator.clipboard.writeText(code); msg.textContent = 'Code copied. Paste it on the other device, then add the password.'; }
-    catch (e) { msg.textContent = 'Code shown above — copy it, paste it on the other device, then add the password.'; }
+    catch (e) { msg.textContent = 'Code shown above. Copy it, paste it on the other device, then add the password.'; }
   };
   $('applyCode').onclick = () => {
     try {
@@ -618,7 +870,7 @@
       delete data.pass;
       S = Object.assign({}, S, data); save(S); openPanel('conn'); dialKey = ''; render();
       msg.textContent = 'Applied. Enter the password, then Save & connect.';
-    } catch (e) { msg.textContent = "That code didn't work — copy it again and paste the whole thing."; }
+    } catch (e) { msg.textContent = "That code didn't work. Copy it again and paste the whole thing."; }
   };
 
   // ---------------- keep the screen awake ----------------
