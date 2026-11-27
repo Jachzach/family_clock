@@ -677,7 +677,7 @@
       const d = document.createElement('div'); d.className = 'who';
       d.innerHTML = '<div class="dot"></div><div><b></b><br><span></span></div>';
       d.querySelector('.dot').style.background = colorOf(name);
-      d.querySelector('b').textContent = name; d.querySelector('span').textContent = p.detail ? `${p.place} · ${p.detail}` : p.place;
+      d.querySelector('b').textContent = name; d.querySelector('span').textContent = !p.detail ? p.place : (p.detail.toLowerCase().includes(String(p.place).toLowerCase()) ? p.detail : `${p.place} · ${p.detail}`);
       legend.appendChild(d);
     });
     animate(true);
