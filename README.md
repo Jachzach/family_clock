@@ -1,2 +1,2 @@
-# weasley_family_clock
-family location sharing on a Harry Potter themed Weasley family clock
+# family_clock
+auto update location from HA on HP themed family clock
