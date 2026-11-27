@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>OwnTracks setup</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f4f1ea; color: #2b2116; margin: 0; padding: 28px 20px; text-align: center; }
+  main { max-width: 420px; margin: 0 auto; }
+  h1 { font-size: 22px; }
+  p { color: #6b5c45; line-height: 1.5; }
+  a.btn { display: block; margin: 22px 0; padding: 18px; border-radius: 12px; background: #5e4416; color: #fbf3df; font-size: 19px; text-decoration: none; font-weight: 600; }
+  ol { text-align: left; color: #4a3d2c; line-height: 1.6; padding-left: 1.2em; }
+  .bad { color: #8a2b14; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Set up OwnTracks</h1>
+  <div id="ok" hidden>
+    <p>Install <b>OwnTracks</b> from the App Store or Play Store first, then tap:</p>
+    <a class="btn" id="go" href="#">Open OwnTracks with my settings</a>
+    <p>Afterwards:</p>
+    <ol>
+      <li><b>iPhone:</b> Settings → OwnTracks → Location → <b>Always</b>, and Settings → General → Background App Refresh → on.</li>
+      <li><b>Android:</b> Settings → Apps → OwnTracks → Permissions → Location → <b>Allow all the time</b>, and Battery → <b>Unrestricted</b>.</li>
+      <li>In OwnTracks, tap the publish / report button once.</li>
+    </ol>
+  </div>
+  <p id="none" class="bad" hidden>This link is missing its setup code. Ask for a new link.</p>
+</main>
+<script>
+  // The settings travel after the # so they never reach the web server.
+  const code = location.hash.slice(1);
+  if (code) {
+    document.getElementById('ok').hidden = false;
+    document.getElementById('go').href = 'owntracks:///config?inline=' + code;
+    // Keep the settings out of the browser history once read.
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  } else {
+    document.getElementById('none').hidden = false;
+  }
+</script>
+</body>
+</html>
