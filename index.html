@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Family Clock</title>
+<style>
+  :root {
+    --bg: #1d1712;
+    --ink: #3a2a1a;
+    --parch1: #f3e6c8;
+    --parch2: #dcc49a;
+    --brass1: #e9cf8a;
+    --brass2: #a07a2c;
+    --brass3: #5e4416;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: radial-gradient(circle at 50% 40%, #2b221a, var(--bg) 70%); color: var(--parch1); font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; overflow: hidden; -webkit-user-select: none; user-select: none; }
+  .wrap { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; gap: 2.5vmin; padding: 2vmin; }
+  @media (orientation: portrait) { .wrap { flex-direction: column; } }
+  svg#clock { width: min(92vmin, 100%); height: auto; max-height: 92vh; filter: drop-shadow(0 1.5vmin 3vmin rgba(0,0,0,.6)); }
+  .legend { display: grid; gap: .6em; font-size: clamp(14px, 2.2vmin, 22px); min-width: 14em; }
+  @media (orientation: portrait) { .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; width: min(92vmin, 100%); font-size: clamp(13px, 2.4vmin, 20px); } }
+  .who { display: flex; align-items: center; gap: .6em; padding: .35em .7em; border-radius: .5em; background: rgba(243,230,200,.06); border: 1px solid rgba(233,207,138,.18); }
+  .dot { width: 1.1em; height: 1.1em; border-radius: 50%; flex: none; border: 2px solid var(--brass1); }
+  .who b { font-weight: 600; letter-spacing: .02em; }
+  .who span { opacity: .75; font-style: italic; }
+  .status { position: fixed; left: 1.2vmin; bottom: 1vmin; font-size: 12px; opacity: .45; font-family: system-ui, sans-serif; }
+  .status.bad { opacity: .9; color: #f2a48a; }
+  .gear { position: fixed; right: .6vmin; bottom: .2vmin; font-size: 22px; opacity: .25; background: none; border: 0; color: var(--parch1); padding: 10px; cursor: pointer; }
+  .gear:hover { opacity: .8; }
+  .panel { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(10,8,6,.75); z-index: 5; }
+  .panel.open { display: flex; }
+  .card { background: var(--parch1); color: var(--ink); width: min(440px, 92vw); border-radius: 12px; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,.6); font-family: system-ui, -apple-system, sans-serif; }
+  .card h2 { margin: 0 0 4px; font-family: "Palatino Linotype", Palatino, Georgia, serif; }
+  .card p { margin: 0 0 14px; font-size: 13px; opacity: .75; }
+  .card label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
+  .card input { width: 100%; padding: 9px 10px; border: 1px solid #b9a27a; border-radius: 6px; font-size: 15px; background: #fffaf0; color: var(--ink); }
+  .row { display: flex; gap: 10px; } .row > div { flex: 1; }
+  .btns { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btns button { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--brass3); font-size: 14px; cursor: pointer; background: #fffaf0; color: var(--ink); }
+  .btns button.primary { background: var(--brass3); color: var(--parch1); }
+  .msg { font-size: 12px; margin-top: 10px; color: #8a2b14; min-height: 1em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <svg id="clock" viewBox="0 0 1000 1000" aria-label="Family location clock"></svg>
+  <div class="legend" id="legend"></div>
+</div>
+<div class="status" id="status">Not connected</div>
+<button class="gear" id="gear" title="Settings">⚙</button>
+
+<div class="panel" id="panel">
+  <form class="card" id="form" autocomplete="off">
+    <h2>Clock settings</h2>
+    <p>Saved on this device only. Use the read-only <b>clock</b> login.</p>
+    <label>Broker address</label>
+    <input name="host" placeholder="xxxxxx.ala.us-east-1.emqxsl.com" required>
+    <div class="row">
+      <div><label>WebSocket port</label><input name="port" value="8084" inputmode="numeric" required></div>
+      <div><label>Topic</label><input name="topic" value="clock/state" required></div>
+    </div>
+    <div class="row">
+      <div><label>Username</label><input name="user" value="clock" autocapitalize="off" required></div>
+      <div><label>Password</label><input name="pass" type="password" required></div>
+    </div>
+    <label>Title in the middle (optional)</label>
+    <input name="title" placeholder="e.g. The Burgins">
+    <div class="btns">
+      <button type="button" id="demo">Preview with sample data</button>
+      <button type="submit" class="primary">Save &amp; connect</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </form>
+</div>
+
+<script>
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const C = 500;                       // dial centre
+  const R_OUT = 486, R_RING = 462, R_BAND_IN = 318;
+  const INK = ['#8c1c13', '#1f3a68', '#2d5a27', '#5b2a6e', '#9a6a12', '#16615e', '#a4471d', '#3f4a57', '#7a1f4a', '#4b5d16'];
+
+  const svg = document.getElementById('clock');
+  const legend = document.getElementById('legend');
+  const statusEl = document.getElementById('status');
+
+  // ---------- settings (stored on this device) ----------
+  const KEY = 'weasley-clock-settings';
+  let memSettings = null;
+  function loadSettings() {
+    try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch (e) {}
+    return memSettings;
+  }
+  function saveSettings(s) {
+    memSettings = s;
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  // ---------- drawing helpers ----------
+  const el = (tag, attrs = {}, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const rad = d => (d - 90) * Math.PI / 180;           // 0deg = 12 o'clock
+  const pt = (r, d) => [C + r * Math.cos(rad(d)), C + r * Math.sin(rad(d))];
+  function arcPath(r, a0, a1, reverse) {
+    const [x0, y0] = pt(r, reverse ? a1 : a0), [x1, y1] = pt(r, reverse ? a0 : a1);
+    const large = Math.abs(a1 - a0) > 180 ? 1 : 0;
+    return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${large} ${reverse ? 0 : 1} ${x1.toFixed(1)},${y1.toFixed(1)}`;
+  }
+  function splitLabel(s) {
+    if (s.length <= 11) return [s];
+    const words = s.split(' ');
+    if (words.length === 1) return [s];
+    let best = [s], bestDiff = 1e9;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+      const d = Math.abs(a.length - b.length);
+      if (d < bestDiff) { bestDiff = d; best = [a, b]; }
+    }
+    return best;
+  }
+
+  // ---------- static dial ----------
+  let dialKey = '';
+  let handsLayer, tagsLayer, titleText;
+  function drawDial(slots, title) {
+    const key = JSON.stringify([slots, title]);
+    if (key === dialKey) return;
+    dialKey = key;
+    svg.innerHTML = '';
+    const defs = el('defs', {}, svg);
+    defs.innerHTML = `
+      <radialGradient id="parch" cx="50%" cy="45%" r="60%">
+        <stop offset="0" stop-color="#f7ecd2"/><stop offset=".7" stop-color="#ead7ae"/><stop offset="1" stop-color="#cdb07a"/>
+      </radialGradient>
+      <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f4dea0"/><stop offset=".35" stop-color="#c79b45"/><stop offset=".65" stop-color="#8d6620"/><stop offset="1" stop-color="#e5c57a"/>
+      </linearGradient>
+      <radialGradient id="hub" cx="40%" cy="35%" r="70%">
+        <stop offset="0" stop-color="#fbe8b0"/><stop offset=".5" stop-color="#b8892f"/><stop offset="1" stop-color="#5e4416"/>
+      </radialGradient>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#2a1a08" flood-opacity=".45"/></filter>`;
+
+    el('circle', { cx: C, cy: C, r: R_OUT, fill: 'url(#brass)' }, svg);
+    el('circle', { cx: C, cy: C, r: R_OUT - 7, fill: 'none', stroke: '#5e4416', 'stroke-width': 2 }, svg);
+    el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#parch)', stroke: '#6b4c1c', 'stroke-width': 3 }, svg);
+    el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: '#6b4c1c', 'stroke-width': 2.5 }, svg);
+    el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: '#6b4c1c', 'stroke-width': 1, 'stroke-dasharray': '2 6' }, svg);
+
+    const n = Math.max(slots.length, 1);
+    const step = 360 / n;
+    const band = el('g', {}, svg);
+    const pad = Math.min(step * 0.06, 2);
+    // one font size for every label, so the dial looks even
+    const specs = slots.map(label => splitLabel(label.toUpperCase()));
+    const fit = lines => Math.min(...lines.map(text => {
+      const r = lines.length === 1 ? 390 : 372;
+      return 2 * Math.PI * r * (step - 2 * pad) / 360 / (text.length * 0.74 + 1);
+    }));
+    const fits = specs.map(fit);
+    const smallest = Math.max(12, Math.min(...fits));
+    // labels can be a bit bigger than the smallest one, but not wildly different
+    const sizes = fits.map(f => Math.max(12, Math.min(f, smallest * 1.4, 24)));
+    slots.forEach((label, i) => {
+      const a = i * step, a0 = a - step / 2, a1 = a + step / 2;
+      const [x0, y0] = pt(R_BAND_IN, a0), [x1, y1] = pt(R_RING, a0);
+      el('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: '#6b4c1c', 'stroke-width': 1.5 }, band);
+      const [sx, sy] = pt(R_BAND_IN - 18, a);
+      el('path', { d: `M${sx},${sy - 7} L${sx + 5},${sy} L${sx},${sy + 7} L${sx - 5},${sy} Z`, fill: '#6b4c1c', transform: `rotate(${a} ${sx} ${sy})` }, band);
+
+      const lines = specs[i];
+      const fs = sizes[i];
+      const bottom = a > 90 && a < 270;
+      const gap = fs * 0.75;
+      const radii = lines.length === 1 ? [390] : (bottom ? [390 - gap, 390 + gap] : [390 + gap, 390 - gap]);
+      lines.forEach((text, j) => {
+        const id = `lab${i}_${j}`;
+        el('path', { id, d: arcPath(radii[j], a0 + pad, a1 - pad, bottom), fill: 'none' }, defs);
+        const t = el('text', { 'font-size': fs.toFixed(1), fill: '#3a2a1a', 'letter-spacing': '1', 'font-weight': 600, 'dominant-baseline': 'middle', 'text-anchor': 'middle' }, band);
+        const tp = el('textPath', { href: `#${id}`, startOffset: '50%' }, t);
+        tp.textContent = text;
+      });
+    });
+
+    handsLayer = el('g', { filter: 'url(#soft)' }, svg);
+    tagsLayer = el('g', {}, svg);
+    el('circle', { cx: C, cy: C, r: 30, fill: 'url(#hub)', stroke: '#3d2b0c', 'stroke-width': 2 }, svg);
+    el('circle', { cx: C, cy: C, r: 9, fill: '#3d2b0c' }, svg);
+    titleText = el('text', { x: C, y: C + 92, 'text-anchor': 'middle', 'font-size': 30, fill: '#5e4416', 'font-style': 'italic', opacity: .85 }, svg);
+    titleText.textContent = title || '';
+    hands = {};
+  }
+
+  // ---------- hands ----------
+  let hands = {};          // name -> {g, tag, angle, target, len, color}
+  const colorFor = (() => { const used = {}; let next = 0; return name => used[name] || (used[name] = INK[next++ % INK.length]); })();
+
+  function handPath(len) {
+    return `M${C - 7},${C + 38} L${C - 3.5},${C - len + 46} L${C - 13},${C - len + 30} L${C},${C - len} L${C + 13},${C - len + 30} L${C + 3.5},${C - len + 46} L${C + 7},${C + 38} Z`;
+  }
+
+  function update(state) {
+    const s = loadSettings() || {};
+    const slots = Array.isArray(state.slots) && state.slots.length ? state.slots : ['Home'];
+    drawDial(slots, s.title);
+    const n = slots.length, step = 360 / n;
+    const people = Array.isArray(state.people) ? state.people : [];
+
+    // group people by slot so shared slots fan out
+    const groups = {};
+    people.forEach(p => {
+      let slot = typeof p.slot === 'number' ? p.slot : -1;
+      if (slot < 0) slot = slots.findIndex(x => x.toLowerCase().replace(/[^a-z]/g, '') === 'lost');
+      if (slot < 0) slot = 0;
+      (groups[slot] = groups[slot] || []).push(p);
+    });
+
+    const seen = new Set();
+    Object.entries(groups).forEach(([slot, list]) => {
+      const k = list.length;
+      const spread = Math.min(step * 0.7, 10 * (k - 1));
+      list.forEach((p, i) => {
+        const offset = k > 1 ? -spread / 2 + spread * i / (k - 1) : 0;
+        const target = slot * step + offset;
+        const len = 290 - (i % 4) * 46;
+        seen.add(p.name);
+        let h = hands[p.name];
+        if (!h) {
+          const color = colorFor(p.name);
+          const g = el('g', {}, handsLayer);
+          const path = el('path', { fill: color, stroke: '#2a1a08', 'stroke-width': 1.5 }, g);
+          const tag = el('g', {}, tagsLayer);
+          el('circle', { r: 34, fill: '#fbf3df', stroke: color, 'stroke-width': 5 }, tag);
+          const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': 17, 'font-weight': 700, fill: color }, tag);
+          h = hands[p.name] = { g, path, tag, t, angle: target - 30, target, len, color };
+        }
+        h.target = target; h.len = len;
+        h.path.setAttribute('d', handPath(len));
+        h.t.textContent = p.name.length > 6 ? p.name.slice(0, 5) + '.' : p.name;
+        h.t.setAttribute('font-size', p.name.length > 4 ? 13 : 16);
+        h.place = p.place;
+      });
+    });
+    for (const name in hands) {
+      if (!seen.has(name)) { hands[name].g.remove(); hands[name].tag.remove(); delete hands[name]; }
+    }
+
+    legend.innerHTML = '';
+    people.forEach(p => {
+      const d = document.createElement('div'); d.className = 'who';
+      d.innerHTML = `<div class="dot"></div><div><b></b><br><span></span></div>`;
+      d.querySelector('.dot').style.background = colorFor(p.name);
+      d.querySelector('b').textContent = p.name;
+      d.querySelector('span').textContent = p.place;
+      legend.appendChild(d);
+    });
+    lastUpdated = state.updated ? new Date(state.updated) : new Date();
+    animate();
+  }
+
+  let animating = false;
+  function animate() {
+    if (animating) return;
+    animating = true;
+    const tick = () => {
+      let moving = false;
+      for (const name in hands) {
+        const h = hands[name];
+        let diff = ((h.target - h.angle) % 360 + 540) % 360 - 180;   // shortest way round
+        if (Math.abs(diff) > 0.05) { h.angle += diff * 0.06 + Math.sign(diff) * 0.05; moving = true; } else h.angle = h.target;
+        h.g.setAttribute('transform', `rotate(${h.angle.toFixed(2)} ${C} ${C})`);
+        const [x, y] = pt(h.len - 70, h.angle);
+        h.tag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+      }
+      if (moving) requestAnimationFrame(tick); else animating = false;
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- status ----------
+  let lastUpdated = null, connected = false, lastError = '';
+  function ago(d) {
+    const s = Math.round((Date.now() - d) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.round(s / 60) + ' min ago';
+    if (s < 86400) return Math.round(s / 3600) + ' h ago';
+    return Math.round(s / 86400) + ' d ago';
+  }
+  function renderStatus() {
+    const parts = [];
+    parts.push(connected ? 'Connected' : (lastError || 'Connecting…'));
+    if (lastUpdated) parts.push('updated ' + ago(lastUpdated));
+    statusEl.textContent = parts.join(' · ');
+    statusEl.classList.toggle('bad', !connected && !demoMode);
+  }
+  setInterval(renderStatus, 15000);
+
+  // ---------- minimal MQTT 3.1.1 over WebSocket (subscribe only) ----------
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  const str = s => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
+  const remLen = n => { const out = []; do { let b = n % 128; n = Math.floor(n / 128); if (n > 0) b |= 128; out.push(b); } while (n > 0); return out; };
+  const packet = (first, body) => new Uint8Array([first, ...remLen(body.length), ...body]);
+
+  let ws = null, buf = new Uint8Array(0), pingTimer = null, pongTimer = null, retryDelay = 2000, retryTimer = null, demoMode = false;
+
+  function connect() {
+    const s = loadSettings();
+    if (!s || !s.host) { openPanel(); return; }
+    demoMode = false;
+    clearTimeout(retryTimer);
+    if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} }
+    lastError = 'Connecting…'; connected = false; renderStatus();
+    const host = s.host.replace(/^\w+:\/\//, '').replace(/\/.*$/, '').replace(/:\d+$/, '');
+    try { ws = new WebSocket(`wss://${host}:${s.port || 8084}/mqtt`, ['mqtt']); }
+    catch (e) { lastError = 'Bad broker address'; renderStatus(); return; }
+    ws.binaryType = 'arraybuffer';
+    buf = new Uint8Array(0);
+    ws.onopen = () => {
+      const clientId = 'weasley-screen-' + Math.random().toString(36).slice(2, 10);
+      const body = [...str('MQTT'), 4, 0x80 | 0x40 | 0x02, 0, 60, ...str(clientId), ...str(s.user || ''), ...str(s.pass || '')];
+      ws.send(packet(0x10, body));
+    };
+    ws.onmessage = ev => {
+      const chunk = new Uint8Array(ev.data);
+      const nb = new Uint8Array(buf.length + chunk.length); nb.set(buf); nb.set(chunk, buf.length); buf = nb;
+      parse();
+    };
+    ws.onerror = () => { lastError = 'Connection error'; };
+    ws.onclose = () => {
+      connected = false; clearInterval(pingTimer); clearTimeout(pongTimer);
+      if (!lastError || lastError === 'Connecting…') lastError = 'Disconnected, retrying…';
+      renderStatus();
+      retryTimer = setTimeout(connect, retryDelay);
+      retryDelay = Math.min(retryDelay * 2, 60000);
+    };
+  }
+
+  function parse() {
+    while (buf.length >= 2) {
+      let mult = 1, len = 0, i = 1, b;
+      do { if (i >= buf.length) return; b = buf[i++]; len += (b & 127) * mult; mult *= 128; } while (b & 128);
+      if (buf.length < i + len) return;
+      const type = buf[0] >> 4, flags = buf[0] & 15, body = buf.slice(i, i + len);
+      buf = buf.slice(i + len);
+      handle(type, flags, body);
+    }
+  }
+
+  function handle(type, flags, body) {
+    const s = loadSettings() || {};
+    if (type === 2) {                                  // CONNACK
+      const rc = body[1];
+      if (rc !== 0) {
+        lastError = rc === 4 ? 'Wrong username or password' : rc === 5 ? 'Login not authorised' : 'Broker refused (' + rc + ')';
+        renderStatus(); retryDelay = 60000; return;
+      }
+      connected = true; lastError = ''; retryDelay = 2000; renderStatus();
+      ws.send(packet(0x82, [0, 1, ...str(s.topic || 'clock/state'), 0]));
+      clearInterval(pingTimer);
+      pingTimer = setInterval(() => {
+        if (ws.readyState !== 1) return;
+        ws.send(new Uint8Array([0xC0, 0]));
+        pongTimer = setTimeout(() => { try { ws.close(); } catch (e) {} }, 15000);
+      }, 30000);
+    } else if (type === 9) {                           // SUBACK
+      if (body[2] === 0x80) { lastError = 'Not allowed to read ' + (s.topic || 'clock/state'); connected = false; renderStatus(); }
+    } else if (type === 13) {                          // PINGRESP
+      clearTimeout(pongTimer);
+    } else if (type === 3) {                           // PUBLISH
+      const qos = (flags >> 1) & 3;
+      const tl = (body[0] << 8) | body[1];
+      let pos = 2 + tl;
+      if (qos > 0) { const id = [body[pos], body[pos + 1]]; pos += 2; if (qos === 1) ws.send(new Uint8Array([0x40, 2, ...id])); }
+      try { update(JSON.parse(dec.decode(body.slice(pos)))); renderStatus(); } catch (e) { console.warn('Bad clock message', e); }
+    }
+  }
+
+  // ---------- settings panel ----------
+  const panel = document.getElementById('panel'), form = document.getElementById('form'), msg = document.getElementById('msg');
+  function openPanel() {
+    const s = loadSettings() || {};
+    for (const k of ['host', 'port', 'topic', 'user', 'pass', 'title']) if (s[k] !== undefined) form.elements[k].value = s[k];
+    msg.textContent = '';
+    panel.classList.add('open');
+  }
+  document.getElementById('gear').onclick = openPanel;
+  panel.addEventListener('click', e => { if (e.target === panel && loadSettings()) panel.classList.remove('open'); });
+  form.onsubmit = e => {
+    e.preventDefault();
+    const f = form.elements;
+    saveSettings({ host: f.host.value.trim(), port: f.port.value.trim() || '8084', topic: f.topic.value.trim() || 'clock/state', user: f.user.value.trim(), pass: f.pass.value, title: f.title.value.trim() });
+    panel.classList.remove('open');
+    dialKey = '';
+    connect();
+  };
+  document.getElementById('demo').onclick = () => {
+    demoMode = true;
+    if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} }
+    panel.classList.remove('open');
+    const slots = ['Home', 'M+Z Home', 'Burgin Home', 'E+J Home', 'UMich', 'MSU', 'Burgin Up North Cottage', 'Burgin Down South Cottage', 'Kellys Work', 'Justins Work', 'Maddies Work', 'Zachs Work', 'Emilys Work', 'Jacobs Work', 'Katies Work', 'Camdens Work', 'Traveling', 'Lost!'];
+    const names = ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie'];
+    const pick = () => ({ slots, people: names.map(n => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: n, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
+    connected = false; lastError = 'Preview (sample data)';
+    update(pick()); renderStatus();
+    clearInterval(window.__demo); window.__demo = setInterval(() => { if (demoMode) { update(pick()); renderStatus(); } }, 6000);
+  };
+
+  // ---------- keep the screen awake where supported ----------
+  let lock = null;
+  async function wake() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') lock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { wake(); if (!demoMode && (!ws || ws.readyState > 1)) connect(); } });
+  wake();
+
+  // ---------- start ----------
+  drawDial(['Home'], (loadSettings() || {}).title);
+  if (loadSettings()) connect(); else openPanel();
+})();
+</script>
+</body>
+</html>
