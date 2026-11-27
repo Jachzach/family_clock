@@ -676,7 +676,7 @@
       const d = document.createElement('div'); d.className = 'who';
       d.innerHTML = '<div class="dot"></div><div><b></b><br><span></span></div>';
       d.querySelector('.dot').style.background = colorOf(name);
-      d.querySelector('b').textContent = name; d.querySelector('span').textContent = p.place;
+      d.querySelector('b').textContent = name; d.querySelector('span').textContent = p.detail ? `${p.place} · ${p.detail}` : p.place;
       legend.appendChild(d);
     });
     animate(true);
