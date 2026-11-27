@@ -112,7 +112,7 @@
           <button data-v="false">Hide<small>dial only</small></button>
         </div>
         <label>Title in the middle (optional)</label>
-        <input type="text" id="title" placeholder="e.g. The Burgins">
+        <input type="text" id="title" placeholder="e.g. Our Family">
         <label>Your own background picture (optional web address, e.g. face.png in the same GitHub folder)</label>
         <input type="text" id="faceImage" placeholder="face.png" autocapitalize="off" autocorrect="off">
       </div>
@@ -550,18 +550,19 @@
     if (T.glow) title.setAttribute('filter', 'url(#glow)');
     title.textContent = S.title || '';
 
-    // real time hands sit under the family hands
+    handsLayer = el('g', { filter: 'url(#soft)' }, svg);
+
+    // real time hands sit on top of the family hands (outlined so they show on any colour)
     timeLayer = el('g', { filter: 'url(#soft)' }, svg);
     if (S.showTime) {
       for (let h = 0; h < 12; h++) { const [x, y] = pt(R_BAND_IN - 62, h * 30); el('circle', { cx: x, cy: y, r: h % 3 ? 2.5 : 5, fill: T.text, opacity: .55 }, timeLayer); }
-      el('path', { class: 'hourHand', d: `M${C - 6},${C + 24} L${C - 4},${C - 150} L${C},${C - 168} L${C + 4},${C - 150} L${C + 6},${C + 24} Z`, fill: T.text, opacity: .7 }, timeLayer);
-      el('path', { class: 'minuteHand', d: `M${C - 4},${C + 30} L${C - 2.5},${C - 228} L${C},${C - 244} L${C + 2.5},${C - 228} L${C + 4},${C + 30} Z`, fill: T.text, opacity: .7 }, timeLayer);
+      const edge = { stroke: T.face[1], 'stroke-width': 3, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
+      el('path', Object.assign({ class: 'hourHand', d: `M${C - 9},${C + 26} L${C - 7},${C - 150} L${C},${C - 172} L${C + 7},${C - 150} L${C + 9},${C + 26} Z`, fill: T.text }, edge), timeLayer);
+      el('path', Object.assign({ class: 'minuteHand', d: `M${C - 5.5},${C + 32} L${C - 4},${C - 230} L${C},${C - 248} L${C + 4},${C - 230} L${C + 5.5},${C + 32} Z`, fill: T.text }, edge), timeLayer);
       updateTime();
     }
 
-    handsLayer = el('g', { filter: 'url(#soft)' }, svg);
     tagsLayer = el('g', { filter: S.depth === '3d' ? 'url(#soft)' : 'none' }, svg);
-
     // hub
     if (T.hubShape === 'seal') {
       el('rect', { x: C - 30, y: C - 30, width: 60, height: 60, rx: 6, fill: 'url(#hub)', filter: 'url(#brush)' }, svg);
@@ -780,8 +781,8 @@
   // ---------------- preview ----------------
   function startDemo() {
     stopSocket(); demoMode = true;
-    const slots = (lastState && lastState.slots) || ['Home', 'M+Z Home', 'Burgin Home', 'E+J Home', 'UMich', 'MSU', 'Burgin Up North Cottage', 'Burgin Down South Cottage', 'Kellys Work', 'Justins Work', 'Maddies Work', 'Zachs Work', 'Emilys Work', 'Jacobs Work', 'Katies Work', 'Camdens Work', 'Traveling', 'Lost!'];
-    const names = lastState && lastState.people && lastState.people.length ? lastState.people.map(p => p.name) : ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie'];
+    const slots = ['Liverpool', 'Hamburg', 'London', 'Paris', 'Stockholm', 'New York', 'Hollywood', 'Tokyo', 'Manila', 'Melbourne', 'Traveling', 'Lost'];
+    const names = ['John', 'Paul', 'George', 'Ringo'];
     const pick = () => ({ slots, people: names.map(nm => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: nm, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
     receive(pick()); clearInterval(demoTimer); demoTimer = setInterval(() => receive(pick()), 6000);
   }
