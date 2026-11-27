@@ -4,45 +4,62 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Family Clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;600&family=Righteous&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #1d1712;
-    --ink: #3a2a1a;
-    --parch1: #f3e6c8;
-    --parch2: #dcc49a;
-    --brass1: #e9cf8a;
-    --brass2: #a07a2c;
-    --brass3: #5e4416;
-  }
+  :root { --page: #1d1712; --page-text: #f3e6c8; --chip: rgba(243,230,200,.06); --chip-border: rgba(233,207,138,.2); --name-font: Georgia, serif; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: radial-gradient(circle at 50% 40%, #2b221a, var(--bg) 70%); color: var(--parch1); font-family: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; overflow: hidden; -webkit-user-select: none; user-select: none; }
+  html, body { margin: 0; height: 100%; background: var(--page); color: var(--page-text); font-family: var(--name-font); overflow: hidden; -webkit-user-select: none; user-select: none; transition: background .4s; }
   .wrap { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; gap: 2.5vmin; padding: 2vmin; }
   @media (orientation: portrait) { .wrap { flex-direction: column; } }
-  svg#clock { width: min(92vmin, 100%); height: auto; max-height: 92vh; filter: drop-shadow(0 1.5vmin 3vmin rgba(0,0,0,.6)); }
+  svg#clock { width: min(92vmin, 100%); height: auto; max-height: 92vh; }
   .legend { display: grid; gap: .6em; font-size: clamp(14px, 2.2vmin, 22px); min-width: 14em; }
   @media (orientation: portrait) { .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; width: min(92vmin, 100%); font-size: clamp(13px, 2.4vmin, 20px); } }
-  .who { display: flex; align-items: center; gap: .6em; padding: .35em .7em; border-radius: .5em; background: rgba(243,230,200,.06); border: 1px solid rgba(233,207,138,.18); }
-  .dot { width: 1.1em; height: 1.1em; border-radius: 50%; flex: none; border: 2px solid var(--brass1); }
-  .who b { font-weight: 600; letter-spacing: .02em; }
-  .who span { opacity: .75; font-style: italic; }
+  .who { display: flex; align-items: center; gap: .6em; padding: .35em .7em; border-radius: .5em; background: var(--chip); border: 1px solid var(--chip-border); }
+  .dot { width: 1.1em; height: 1.1em; border-radius: 50%; flex: none; }
+  .who b { font-weight: 600; }
+  .who span { opacity: .75; }
   .status { position: fixed; left: 1.2vmin; bottom: 1vmin; font-size: 12px; opacity: .45; font-family: system-ui, sans-serif; }
-  .status.bad { opacity: .9; color: #f2a48a; }
-  .gear { position: fixed; right: .6vmin; bottom: .2vmin; font-size: 22px; opacity: .25; background: none; border: 0; color: var(--parch1); padding: 10px; cursor: pointer; }
+  .status.bad { opacity: .9; color: #e2603f; }
+  .gear { position: fixed; right: .6vmin; bottom: .2vmin; font-size: 22px; opacity: .25; background: none; border: 0; color: var(--page-text); padding: 10px; cursor: pointer; }
   .gear:hover { opacity: .8; }
-  .panel { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(10,8,6,.75); z-index: 5; }
+
+  /* settings panel */
+  .panel { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(10,8,6,.7); z-index: 5; }
   .panel.open { display: flex; }
-  .card { background: var(--parch1); color: var(--ink); width: min(440px, 92vw); border-radius: 12px; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0,0,0,.6); font-family: system-ui, -apple-system, sans-serif; }
-  .card h2 { margin: 0 0 4px; font-family: "Palatino Linotype", Palatino, Georgia, serif; }
-  .card p { margin: 0 0 14px; font-size: 13px; opacity: .75; }
-  .card label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
-  .card input { width: 100%; padding: 9px 10px; border: 1px solid #b9a27a; border-radius: 6px; font-size: 15px; background: #fffaf0; color: var(--ink); }
+  .card { background: #fbf7ee; color: #2b2116; width: min(520px, 94vw); max-height: 92vh; display: flex; flex-direction: column; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.6); font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+  .card header { padding: 18px 22px 0; }
+  .card h2 { margin: 0 0 10px; font-size: 20px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e3d8c3; }
+  .tabs button { flex: 1; padding: 9px 4px; border: 0; background: none; font-size: 14px; color: #7a6a52; cursor: pointer; border-bottom: 3px solid transparent; }
+  .tabs button.on { color: #2b2116; border-color: #a07a2c; font-weight: 600; }
+  .body { padding: 14px 22px; overflow: auto; flex: 1; }
+  .tab { display: none; } .tab.on { display: block; }
+  .body p { margin: 4px 0 12px; font-size: 13px; color: #6b5c45; }
+  .body label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
+  .body input[type=text], .body input[type=password], .body textarea { width: 100%; padding: 9px 10px; border: 1px solid #cdbb98; border-radius: 6px; font-size: 15px; background: #fff; color: #2b2116; font-family: inherit; }
+  .body textarea { font-size: 12px; height: 70px; resize: vertical; }
   .row { display: flex; gap: 10px; } .row > div { flex: 1; }
-  .btns { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
-  .btns button { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--brass3); font-size: 14px; cursor: pointer; background: #fffaf0; color: var(--ink); }
-  .btns button.primary { background: var(--brass3); color: var(--parch1); }
-  .msg { font-size: 12px; margin-top: 10px; color: #8a2b14; min-height: 1em; }
+  .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .choices button { padding: 12px 8px; border-radius: 8px; border: 2px solid #e3d8c3; background: #fff; cursor: pointer; font-size: 14px; color: #2b2116; }
+  .choices button.on { border-color: #a07a2c; background: #fbf0d6; font-weight: 600; }
+  .choices small { display: block; font-size: 11px; color: #7a6a52; font-weight: 400; margin-top: 2px; }
+  .list { border: 1px solid #e3d8c3; border-radius: 8px; overflow: hidden; }
+  .item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 1px solid #efe6d4; background: #fff; font-size: 14px; }
+  .item:last-child { border-bottom: 0; }
+  .item .grow { flex: 1; }
+  .item .num { width: 1.6em; color: #9a8a70; font-size: 12px; text-align: right; }
+  .item button { width: 34px; height: 30px; border: 1px solid #d9cbb0; background: #faf6ec; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .item input[type=color] { width: 34px; height: 30px; padding: 0; border: 1px solid #d9cbb0; border-radius: 6px; background: none; }
+  .small-btn { margin-top: 8px; padding: 7px 10px; border: 1px solid #d9cbb0; background: #faf6ec; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .card footer { display: flex; gap: 10px; padding: 12px 22px 18px; border-top: 1px solid #e3d8c3; flex-wrap: wrap; }
+  .card footer button { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #5e4416; font-size: 14px; cursor: pointer; background: #fff; color: #2b2116; }
+  .card footer button.primary { background: #5e4416; color: #fbf3df; }
+  .msg { font-size: 12px; color: #8a2b14; min-height: 1em; width: 100%; }
 </style>
 </head>
 <body>
@@ -54,214 +71,350 @@
 <button class="gear" id="gear" title="Settings">⚙</button>
 
 <div class="panel" id="panel">
-  <form class="card" id="form" autocomplete="off">
-    <h2>Clock settings</h2>
-    <p>Saved on this device only. Use the read-only <b>clock</b> login.</p>
-    <label>Broker address</label>
-    <input name="host" placeholder="xxxxxx.ala.us-east-1.emqxsl.com" required>
-    <div class="row">
-      <div><label>WebSocket port</label><input name="port" value="8084" inputmode="numeric" required></div>
-      <div><label>Topic</label><input name="topic" value="clock/state" required></div>
+  <div class="card">
+    <header>
+      <h2>Clock settings</h2>
+      <div class="tabs" id="tabs">
+        <button data-tab="look" class="on">Look</button>
+        <button data-tab="places">Places</button>
+        <button data-tab="people">People</button>
+        <button data-tab="conn">Connection</button>
+      </div>
+    </header>
+    <div class="body">
+      <div class="tab on" data-tab="look">
+        <label>Clock face</label>
+        <div class="choices" id="themeChoices"></div>
+        <label>Place names</label>
+        <div class="choices" id="labelChoices">
+          <button data-v="curved">Around the dial<small>curved, across the arms</small></button>
+          <button data-v="radial">Along the arms<small>reads outward, parallel to the arms</small></button>
+        </div>
+        <label>Title in the middle (optional)</label>
+        <input type="text" id="title" placeholder="e.g. The Burgins">
+      </div>
+      <div class="tab" data-tab="places">
+        <p>Order around the dial, starting at the top and going clockwise. This only changes this screen; new places from Home Assistant are added at the end.</p>
+        <div class="list" id="placeList"></div>
+        <button class="small-btn" id="resetPlaces">Reset to Home Assistant order</button>
+      </div>
+      <div class="tab" data-tab="people">
+        <p>Tap a color to change it. Top of the list gets the longest arm.</p>
+        <div class="list" id="peopleList"></div>
+        <button class="small-btn" id="resetPeople">Reset colors and order</button>
+      </div>
+      <div class="tab" data-tab="conn">
+        <p>Saved on this device only. Use the read-only <b>clock</b> login.</p>
+        <label>Broker address</label>
+        <input type="text" id="host" placeholder="xxxxxx.ala.us-east-1.emqxsl.com" autocapitalize="off" autocorrect="off">
+        <div class="row">
+          <div><label>WebSocket port</label><input type="text" id="port" value="8084" inputmode="numeric"></div>
+          <div><label>Topic</label><input type="text" id="topic" value="clock/state" autocapitalize="off"></div>
+        </div>
+        <div class="row">
+          <div><label>Username</label><input type="text" id="user" value="clock" autocapitalize="off" autocorrect="off"></div>
+          <div><label>Password</label><input type="password" id="pass"></div>
+        </div>
+        <label>Setup code (copies look, order, colors and address to another device; password not included)</label>
+        <textarea id="code" placeholder="Paste a setup code here, then tap Apply code"></textarea>
+        <div class="row">
+          <div><button class="small-btn" id="copyCode">Copy this device's code</button></div>
+          <div><button class="small-btn" id="applyCode">Apply code</button></div>
+        </div>
+      </div>
     </div>
-    <div class="row">
-      <div><label>Username</label><input name="user" value="clock" autocapitalize="off" required></div>
-      <div><label>Password</label><input name="pass" type="password" required></div>
-    </div>
-    <label>Title in the middle (optional)</label>
-    <input name="title" placeholder="e.g. The Burgins">
-    <div class="btns">
-      <button type="button" id="demo">Preview with sample data</button>
-      <button type="submit" class="primary">Save &amp; connect</button>
-    </div>
-    <div class="msg" id="msg"></div>
-  </form>
+    <footer>
+      <button id="demo">Preview with sample data</button>
+      <button class="primary" id="saveConnect">Save &amp; connect</button>
+      <div class="msg" id="msg"></div>
+    </footer>
+  </div>
 </div>
 
 <script>
 (() => {
   const NS = 'http://www.w3.org/2000/svg';
-  const C = 500;                       // dial centre
-  const R_OUT = 486, R_RING = 462, R_BAND_IN = 318;
-  const INK = ['#8c1c13', '#1f3a68', '#2d5a27', '#5b2a6e', '#9a6a12', '#16615e', '#a4471d', '#3f4a57', '#7a1f4a', '#4b5d16'];
+  const C = 500, R_OUT = 486, R_RING = 462, R_BAND_IN = 318, R_MID = (R_RING + R_BAND_IN) / 2;
+  const L_MAX = 295, L_MIN = 150;
 
-  const svg = document.getElementById('clock');
-  const legend = document.getElementById('legend');
-  const statusEl = document.getElementById('status');
-
-  // ---------- settings (stored on this device) ----------
-  const KEY = 'weasley-clock-settings';
-  let memSettings = null;
-  function loadSettings() {
-    try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch (e) {}
-    return memSettings;
-  }
-  function saveSettings(s) {
-    memSettings = s;
-    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
-  }
-
-  // ---------- drawing helpers ----------
-  const el = (tag, attrs = {}, parent) => {
-    const n = document.createElementNS(NS, tag);
-    for (const k in attrs) n.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(n);
-    return n;
+  // ---------------- themes ----------------
+  const THEMES = {
+    classic: {
+      label: 'Classic', sub: 'parchment, brass, script',
+      page: 'radial-gradient(circle at 50% 40%, #2b221a, #1d1712 70%)', pageText: '#f3e6c8', chip: 'rgba(243,230,200,.07)', chipBorder: 'rgba(233,207,138,.22)',
+      face: ['#f7ecd2', '#ead7ae', '#cdb07a'], rim: ['#f4dea0', '#c79b45', '#8d6620', '#e5c57a'], line: '#6b4c1c', text: '#3a2a1a',
+      font: "'Dancing Script', 'Apple Chancery', 'Snell Roundhand', cursive", weight: 700, upper: false, charW: 0.47, cap: 34, spacing: 0, lineH: 1.05,
+      nameFont: "'Dancing Script', 'Apple Chancery', cursive", hand: 'ornate', handStroke: '#2a1a08', tagFill: '#fbf3df', tagText: null,
+      hub: ['#fbe8b0', '#b8892f', '#5e4416'], hubStroke: '#3d2b0c', titleColor: '#5e4416', ornament: 'diamond', shadow: true,
+      palette: ['#8c1c13', '#1f3a68', '#2d5a27', '#5b2a6e', '#9a6a12', '#16615e', '#a4471d', '#3f4a57', '#7a1f4a', '#4b5d16']
+    },
+    modern: {
+      label: 'Modern', sub: 'dark, clean, bright',
+      page: 'linear-gradient(160deg, #0b1020, #121a30)', pageText: '#e6ecff', chip: 'rgba(230,236,255,.06)', chipBorder: 'rgba(230,236,255,.14)',
+      face: ['#1b2440', '#151c33', '#10162a'], rim: ['#3a4770', '#232c4a', '#1a2240', '#3a4770'], line: 'rgba(230,236,255,.18)', text: '#e6ecff',
+      font: "'Inter', system-ui, -apple-system, sans-serif", weight: 600, upper: true, charW: 0.72, cap: 22, spacing: 2, lineH: 1.15,
+      nameFont: "'Inter', system-ui, sans-serif", hand: 'slim', handStroke: 'none', tagFill: '#10162a', tagText: '#ffffff',
+      hub: ['#ffffff', '#c9d3f2', '#8a96bd'], hubStroke: '#0b1020', titleColor: '#9aa8d6', ornament: 'dot', shadow: false,
+      palette: ['#ff6b6b', '#4dabf7', '#51cf66', '#cc5de8', '#fcc419', '#20c997', '#ff922b', '#91a7ff', '#f06595', '#a9e34b']
+    },
+    minimal: {
+      label: 'Minimal', sub: 'white, thin lines',
+      page: '#f2f1ee', pageText: '#1a1a1a', chip: 'rgba(0,0,0,.03)', chipBorder: 'rgba(0,0,0,.08)',
+      face: ['#ffffff', '#ffffff', '#f7f7f5'], rim: ['#1a1a1a', '#1a1a1a', '#1a1a1a', '#1a1a1a'], rimThin: true, line: 'rgba(0,0,0,.12)', text: '#1a1a1a',
+      font: "'Helvetica Neue', Helvetica, Arial, sans-serif", weight: 400, upper: false, charW: 0.55, cap: 24, spacing: 0.5, lineH: 1.15,
+      nameFont: "'Helvetica Neue', Helvetica, Arial, sans-serif", hand: 'line', handStroke: 'none', tagFill: '#ffffff', tagText: null,
+      hub: ['#1a1a1a', '#1a1a1a', '#1a1a1a'], hubStroke: '#1a1a1a', titleColor: '#888', ornament: 'none', shadow: false,
+      palette: ['#d94841', '#2f6fdb', '#2e9e5b', '#8e44ad', '#e0a100', '#12a39a', '#e8702a', '#5c6b7a', '#c2185b', '#6b8e23']
+    },
+    retro: {
+      label: 'Retro', sub: '70s cream, orange, chunky',
+      page: 'radial-gradient(circle at 50% 40%, #3a2516, #22150c 75%)', pageText: '#f6e7c8', chip: 'rgba(246,231,200,.07)', chipBorder: 'rgba(232,140,48,.3)',
+      face: ['#f8ecd0', '#f1dfb7', '#e3c993'], rim: ['#f2a33a', '#d9662b', '#a8461b', '#e88a30'], line: '#b45a24', text: '#5a2d0c',
+      font: "'Righteous', 'Cooper Black', 'Arial Rounded MT Bold', sans-serif", weight: 400, upper: true, charW: 0.68, cap: 24, spacing: 1, lineH: 1.1,
+      nameFont: "'Righteous', 'Arial Rounded MT Bold', sans-serif", hand: 'chunky', handStroke: '#3b1d08', tagFill: '#fff6e0', tagText: null,
+      hub: ['#ffd27a', '#e07b2c', '#8a3412'], hubStroke: '#3b1d08', titleColor: '#a8461b', ornament: 'sun', shadow: true,
+      palette: ['#c0392b', '#e67e22', '#d4a017', '#6b8e23', '#1f7a7a', '#8e3b5b', '#7b4a2a', '#3d5a80', '#b5651d', '#556b2f']
+    }
   };
-  const rad = d => (d - 90) * Math.PI / 180;           // 0deg = 12 o'clock
+
+  // ---------------- settings (this device only) ----------------
+  const KEY = 'weasley-clock-settings';
+  const DEFAULTS = { host: '', port: '8084', topic: 'clock/state', user: 'clock', pass: '', title: '', theme: 'classic', labels: 'curved', order: null, peopleOrder: null, colors: {} };
+  let mem = null;
+  function load() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    return Object.assign({}, DEFAULTS, s || mem || {});
+  }
+  function save(s) { mem = s; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+  let S = load();
+  const hasConnection = () => !!S.host;
+
+  // ---------------- helpers ----------------
+  const svg = document.getElementById('clock'), legend = document.getElementById('legend'), statusEl = document.getElementById('status');
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  const rad = d => (d - 90) * Math.PI / 180;
   const pt = (r, d) => [C + r * Math.cos(rad(d)), C + r * Math.sin(rad(d))];
+  const norm = s => String(s).toLowerCase().replace(/[^a-z]/g, '');
   function arcPath(r, a0, a1, reverse) {
     const [x0, y0] = pt(r, reverse ? a1 : a0), [x1, y1] = pt(r, reverse ? a0 : a1);
-    const large = Math.abs(a1 - a0) > 180 ? 1 : 0;
-    return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${large} ${reverse ? 0 : 1} ${x1.toFixed(1)},${y1.toFixed(1)}`;
+    return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${Math.abs(a1 - a0) > 180 ? 1 : 0} ${reverse ? 0 : 1} ${x1.toFixed(1)},${y1.toFixed(1)}`;
   }
-  function splitLabel(s) {
-    if (s.length <= 11) return [s];
-    const words = s.split(' ');
-    if (words.length === 1) return [s];
-    let best = [s], bestDiff = 1e9;
-    for (let i = 1; i < words.length; i++) {
-      const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+  // Two or more words always go on two lines (balanced), one word stays on one line.
+  function twoLines(s) {
+    const w = s.trim().split(/\s+/);
+    if (w.length < 2) return [s.trim()];
+    let best = null, diff = 1e9;
+    for (let i = 1; i < w.length; i++) {
+      const a = w.slice(0, i).join(' '), b = w.slice(i).join(' ');
       const d = Math.abs(a.length - b.length);
-      if (d < bestDiff) { bestDiff = d; best = [a, b]; }
+      if (d < diff) { diff = d; best = [a, b]; }
     }
     return best;
   }
+  function merge(saved, current) {
+    const cur = current.slice();
+    if (!Array.isArray(saved)) return cur;
+    const out = saved.filter(x => cur.includes(x));
+    cur.forEach(x => { if (!out.includes(x)) out.push(x); });
+    return out;
+  }
 
-  // ---------- static dial ----------
-  let dialKey = '';
-  let handsLayer, tagsLayer, titleText;
-  function drawDial(slots, title) {
-    const key = JSON.stringify([slots, title]);
+  // ---------------- state ----------------
+  let lastState = null;
+  let angles = {};        // name -> current drawn angle (kept across redraws)
+  let hands = {};         // name -> svg nodes + target
+  let dialKey = '', handsLayer, tagsLayer;
+
+  const displaySlots = () => merge(S.order, (lastState && lastState.slots) || ['Home']);
+  const peopleNames = () => ((lastState && lastState.people) || []).map(p => p.name);
+  const displayPeople = () => merge(S.peopleOrder, peopleNames());
+  function colorOf(name) {
+    if (S.colors[name]) return S.colors[name];
+    const T = THEMES[S.theme] || THEMES.classic;
+    const i = peopleNames().indexOf(name);
+    return T.palette[(i < 0 ? 0 : i) % T.palette.length];
+  }
+
+  // ---------------- dial ----------------
+  function applyPageTheme(T) {
+    const r = document.documentElement.style;
+    r.setProperty('--page', T.page); r.setProperty('--page-text', T.pageText);
+    r.setProperty('--chip', T.chip); r.setProperty('--chip-border', T.chipBorder); r.setProperty('--name-font', T.nameFont);
+    document.body.style.background = T.page;
+  }
+
+  function drawDial(slots) {
+    const T = THEMES[S.theme] || THEMES.classic;
+    const key = JSON.stringify([slots, S.theme, S.labels, S.title]);
     if (key === dialKey) return;
     dialKey = key;
+    applyPageTheme(T);
     svg.innerHTML = '';
+    svg.style.filter = T.shadow ? 'drop-shadow(0 1.5vmin 3vmin rgba(0,0,0,.55))' : 'drop-shadow(0 .6vmin 1.6vmin rgba(0,0,0,.18))';
     const defs = el('defs', {}, svg);
     defs.innerHTML = `
-      <radialGradient id="parch" cx="50%" cy="45%" r="60%">
-        <stop offset="0" stop-color="#f7ecd2"/><stop offset=".7" stop-color="#ead7ae"/><stop offset="1" stop-color="#cdb07a"/>
-      </radialGradient>
-      <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#f4dea0"/><stop offset=".35" stop-color="#c79b45"/><stop offset=".65" stop-color="#8d6620"/><stop offset="1" stop-color="#e5c57a"/>
-      </linearGradient>
-      <radialGradient id="hub" cx="40%" cy="35%" r="70%">
-        <stop offset="0" stop-color="#fbe8b0"/><stop offset=".5" stop-color="#b8892f"/><stop offset="1" stop-color="#5e4416"/>
-      </radialGradient>
-      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#2a1a08" flood-opacity=".45"/></filter>`;
+      <radialGradient id="face" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="${T.face[0]}"/><stop offset=".7" stop-color="${T.face[1]}"/><stop offset="1" stop-color="${T.face[2]}"/></radialGradient>
+      <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">${T.rim.map((c, i) => `<stop offset="${i / (T.rim.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient>
+      <radialGradient id="hub" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="${T.hub[0]}"/><stop offset=".5" stop-color="${T.hub[1]}"/><stop offset="1" stop-color="${T.hub[2]}"/></radialGradient>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="${T.shadow ? .35 : .12}"/></filter>`;
 
-    el('circle', { cx: C, cy: C, r: R_OUT, fill: 'url(#brass)' }, svg);
-    el('circle', { cx: C, cy: C, r: R_OUT - 7, fill: 'none', stroke: '#5e4416', 'stroke-width': 2 }, svg);
-    el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#parch)', stroke: '#6b4c1c', 'stroke-width': 3 }, svg);
-    el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: '#6b4c1c', 'stroke-width': 2.5 }, svg);
-    el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: '#6b4c1c', 'stroke-width': 1, 'stroke-dasharray': '2 6' }, svg);
+    if (T.rimThin) {
+      el('circle', { cx: C, cy: C, r: R_RING + 6, fill: 'url(#face)', stroke: T.rim[0], 'stroke-width': 4 }, svg);
+    } else {
+      el('circle', { cx: C, cy: C, r: R_OUT, fill: 'url(#rim)' }, svg);
+      el('circle', { cx: C, cy: C, r: R_OUT - 7, fill: 'none', stroke: 'rgba(0,0,0,.35)', 'stroke-width': 2 }, svg);
+      el('circle', { cx: C, cy: C, r: R_RING, fill: 'url(#face)', stroke: T.line, 'stroke-width': 3 }, svg);
+    }
+    el('circle', { cx: C, cy: C, r: R_BAND_IN, fill: 'none', stroke: T.line, 'stroke-width': T.rimThin ? 1.5 : 2.5 }, svg);
+    if (T.ornament === 'diamond') el('circle', { cx: C, cy: C, r: R_BAND_IN - 8, fill: 'none', stroke: T.line, 'stroke-width': 1, 'stroke-dasharray': '2 6' }, svg);
+    if (T.ornament === 'sun') {
+      const sun = el('g', { opacity: .18 }, svg);
+      for (let i = 0; i < 48; i++) { const [x, y] = pt(R_BAND_IN - 4, i * 7.5); el('line', { x1: C, y1: C, x2: x, y2: y, stroke: T.line, 'stroke-width': i % 2 ? 2 : 5 }, sun); }
+    }
 
-    const n = Math.max(slots.length, 1);
-    const step = 360 / n;
-    const band = el('g', {}, svg);
+    const n = Math.max(slots.length, 1), step = 360 / n, band = el('g', {}, svg);
     const pad = Math.min(step * 0.06, 2);
-    // one font size for every label, so the dial looks even
-    const specs = slots.map(label => splitLabel(label.toUpperCase()));
-    const fit = lines => Math.min(...lines.map(text => {
-      const r = lines.length === 1 ? 390 : 372;
-      return 2 * Math.PI * r * (step - 2 * pad) / 360 / (text.length * 0.74 + 1);
-    }));
-    const fits = specs.map(fit);
-    const smallest = Math.max(12, Math.min(...fits));
-    // labels can be a bit bigger than the smallest one, but not wildly different
-    const sizes = fits.map(f => Math.max(12, Math.min(f, smallest * 1.4, 24)));
+    const fmt = s => T.upper ? s.toUpperCase() : s;
+
+    // work out lines + a font size for each label, then keep sizes within 35% of the smallest
+    const specs = slots.map(label => {
+      const text = fmt(label);
+      let lines;
+      if (S.labels === 'curved') lines = twoLines(text);
+      else lines = (text.length > 9 && text.includes(' ')) ? twoLines(text) : [text];
+      const longest = Math.max(...lines.map(l => l.length));
+      let fit;
+      if (S.labels === 'curved') {
+        const r = lines.length === 1 ? R_MID : R_MID - 18;
+        const arc = 2 * Math.PI * r * (step - 2 * pad) / 360;
+        fit = Math.min((arc - T.spacing * longest) / (longest * T.charW + 0.6), (R_RING - R_BAND_IN - 20) / (lines.length * T.lineH * 1.15));
+      } else {
+        const length = R_RING - R_BAND_IN - 22;
+        const width = 2 * Math.PI * (R_BAND_IN + 14) * step / 360;
+        fit = Math.min((length - T.spacing * longest) / (longest * T.charW + 0.4), width * 0.92 / (lines.length * T.lineH * 1.1));
+      }
+      return { lines, fit };
+    });
+    const smallest = Math.min(...specs.map(s => s.fit));
+    specs.forEach(s => { s.fs = Math.max(11, Math.min(s.fit, smallest * 1.35, T.cap)); });
+
     slots.forEach((label, i) => {
       const a = i * step, a0 = a - step / 2, a1 = a + step / 2;
-      const [x0, y0] = pt(R_BAND_IN, a0), [x1, y1] = pt(R_RING, a0);
-      el('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: '#6b4c1c', 'stroke-width': 1.5 }, band);
+      const [x0, y0] = pt(T.rimThin ? R_BAND_IN : R_BAND_IN, a0), [x1, y1] = pt(R_RING, a0);
+      el('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: T.line, 'stroke-width': T.rimThin ? 1 : 1.5 }, band);
       const [sx, sy] = pt(R_BAND_IN - 18, a);
-      el('path', { d: `M${sx},${sy - 7} L${sx + 5},${sy} L${sx},${sy + 7} L${sx - 5},${sy} Z`, fill: '#6b4c1c', transform: `rotate(${a} ${sx} ${sy})` }, band);
+      if (T.ornament === 'diamond') el('path', { d: `M${sx},${sy - 7} L${sx + 5},${sy} L${sx},${sy + 7} L${sx - 5},${sy} Z`, fill: T.line, transform: `rotate(${a} ${sx} ${sy})` }, band);
+      if (T.ornament === 'dot' || T.ornament === 'sun') el('circle', { cx: sx, cy: sy, r: 4, fill: T.line }, band);
 
-      const lines = specs[i];
-      const fs = sizes[i];
-      const bottom = a > 90 && a < 270;
-      const gap = fs * 0.75;
-      const radii = lines.length === 1 ? [390] : (bottom ? [390 - gap, 390 + gap] : [390 + gap, 390 - gap]);
-      lines.forEach((text, j) => {
-        const id = `lab${i}_${j}`;
-        el('path', { id, d: arcPath(radii[j], a0 + pad, a1 - pad, bottom), fill: 'none' }, defs);
-        const t = el('text', { 'font-size': fs.toFixed(1), fill: '#3a2a1a', 'letter-spacing': '1', 'font-weight': 600, 'dominant-baseline': 'middle', 'text-anchor': 'middle' }, band);
-        const tp = el('textPath', { href: `#${id}`, startOffset: '50%' }, t);
-        tp.textContent = text;
-      });
+      const { lines, fs } = specs[i];
+      const textAttrs = { 'font-size': fs.toFixed(1), fill: T.text, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, 'dominant-baseline': 'middle', 'text-anchor': 'middle' };
+      if (S.labels === 'curved') {
+        const bottom = a > 90 && a < 270;
+        const gap = fs * T.lineH * 0.55;
+        const radii = lines.length === 1 ? [R_MID] : (bottom ? [R_MID - gap, R_MID + gap] : [R_MID + gap, R_MID - gap]);
+        lines.forEach((text, j) => {
+          const id = `lab${i}_${j}`;
+          el('path', { id, d: arcPath(radii[j], a0 + pad, a1 - pad, bottom), fill: 'none' }, defs);
+          const t = el('text', textAttrs, band);
+          el('textPath', { href: `#${id}`, startOffset: '50%' }, t).textContent = text;
+        });
+      } else {
+        const left = a > 180 && a < 360;
+        const [cx, cy] = pt(R_MID + 4, a);
+        const g = el('g', { transform: `translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${(left ? a + 90 : a - 90).toFixed(2)})` }, band);
+        lines.forEach((text, j) => {
+          const t = el('text', Object.assign({}, textAttrs, { x: 0, y: ((j - (lines.length - 1) / 2) * fs * T.lineH).toFixed(1) }), g);
+          t.textContent = text;
+        });
+      }
     });
 
+    const title = el('text', { x: C, y: C + 95, 'text-anchor': 'middle', 'font-size': T.upper ? 26 : 34, fill: T.titleColor, 'font-family': T.font, 'font-weight': T.weight, 'letter-spacing': T.spacing, opacity: .9 }, svg);
+    title.textContent = S.title || '';
     handsLayer = el('g', { filter: 'url(#soft)' }, svg);
     tagsLayer = el('g', {}, svg);
-    el('circle', { cx: C, cy: C, r: 30, fill: 'url(#hub)', stroke: '#3d2b0c', 'stroke-width': 2 }, svg);
-    el('circle', { cx: C, cy: C, r: 9, fill: '#3d2b0c' }, svg);
-    titleText = el('text', { x: C, y: C + 92, 'text-anchor': 'middle', 'font-size': 30, fill: '#5e4416', 'font-style': 'italic', opacity: .85 }, svg);
-    titleText.textContent = title || '';
+    el('circle', { cx: C, cy: C, r: T.hand === 'line' ? 12 : 30, fill: 'url(#hub)', stroke: T.hubStroke, 'stroke-width': 2 }, svg);
+    if (T.hand !== 'line') el('circle', { cx: C, cy: C, r: 9, fill: T.hubStroke }, svg);
     hands = {};
   }
 
-  // ---------- hands ----------
-  let hands = {};          // name -> {g, tag, angle, target, len, color}
-  const colorFor = (() => { const used = {}; let next = 0; return name => used[name] || (used[name] = INK[next++ % INK.length]); })();
-
-  function handPath(len) {
-    return `M${C - 7},${C + 38} L${C - 3.5},${C - len + 46} L${C - 13},${C - len + 30} L${C},${C - len} L${C + 13},${C - len + 30} L${C + 3.5},${C - len + 46} L${C + 7},${C + 38} Z`;
+  // ---------------- hands ----------------
+  function handShape(T, len) {
+    switch (T.hand) {
+      case 'slim': return `M${C - 4},${C + 30} L${C - 4},${C - len + 4} Q${C},${C - len - 4} ${C + 4},${C - len + 4} L${C + 4},${C + 30} Z`;
+      case 'line': return `M${C - 1.5},${C + 20} L${C - 1.5},${C - len} L${C + 1.5},${C - len} L${C + 1.5},${C + 20} Z`;
+      case 'chunky': return `M${C - 11},${C + 40} L${C - 9},${C - len + 18} Q${C},${C - len - 6} ${C + 9},${C - len + 18} L${C + 11},${C + 40} Q${C},${C + 52} ${C - 11},${C + 40} Z`;
+      default: return `M${C - 7},${C + 38} L${C - 3.5},${C - len + 46} L${C - 13},${C - len + 30} L${C},${C - len} L${C + 13},${C - len + 30} L${C + 3.5},${C - len + 46} L${C + 7},${C + 38} Z`;
+    }
   }
 
-  function update(state) {
-    const s = loadSettings() || {};
-    const slots = Array.isArray(state.slots) && state.slots.length ? state.slots : ['Home'];
-    drawDial(slots, s.title);
+  function render() {
+    if (!lastState) { drawDial(displaySlots()); return; }
+    const T = THEMES[S.theme] || THEMES.classic;
+    const slots = displaySlots();
+    drawDial(slots);
     const n = slots.length, step = 360 / n;
-    const people = Array.isArray(state.people) ? state.people : [];
+    const people = lastState.people || [];
+    const order = displayPeople();
+    const haSlots = lastState.slots || [];
+    const lostIdx = slots.findIndex(x => norm(x) === 'lost');
 
-    // group people by slot so shared slots fan out
+    // where each person points, using this screen's place order
     const groups = {};
     people.forEach(p => {
-      let slot = typeof p.slot === 'number' ? p.slot : -1;
-      if (slot < 0) slot = slots.findIndex(x => x.toLowerCase().replace(/[^a-z]/g, '') === 'lost');
-      if (slot < 0) slot = 0;
-      (groups[slot] = groups[slot] || []).push(p);
+      let idx = slots.indexOf(p.place);
+      if (idx < 0 && typeof p.slot === 'number' && haSlots[p.slot] !== undefined) idx = slots.indexOf(haSlots[p.slot]);
+      if (idx < 0) idx = lostIdx >= 0 ? lostIdx : 0;
+      (groups[idx] = groups[idx] || []).push(p);
     });
 
     const seen = new Set();
-    Object.entries(groups).forEach(([slot, list]) => {
-      const k = list.length;
-      const spread = Math.min(step * 0.7, 10 * (k - 1));
+    Object.entries(groups).forEach(([idx, list]) => {
+      list.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
+      const k = list.length, spread = Math.min(step * 0.7, 9 * (k - 1));
       list.forEach((p, i) => {
-        const offset = k > 1 ? -spread / 2 + spread * i / (k - 1) : 0;
-        const target = slot * step + offset;
-        const len = 290 - (i % 4) * 46;
+        const rank = order.indexOf(p.name);
+        const len = order.length > 1 ? L_MAX - rank * (L_MAX - L_MIN) / (order.length - 1) : L_MAX;
+        const target = idx * step + (k > 1 ? -spread / 2 + spread * i / (k - 1) : 0);
+        const color = colorOf(p.name);
         seen.add(p.name);
         let h = hands[p.name];
         if (!h) {
-          const color = colorFor(p.name);
           const g = el('g', {}, handsLayer);
-          const path = el('path', { fill: color, stroke: '#2a1a08', 'stroke-width': 1.5 }, g);
+          const path = el('path', {}, g);
           const tag = el('g', {}, tagsLayer);
-          el('circle', { r: 34, fill: '#fbf3df', stroke: color, 'stroke-width': 5 }, tag);
-          const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': 17, 'font-weight': 700, fill: color }, tag);
-          h = hands[p.name] = { g, path, tag, t, angle: target - 30, target, len, color };
+          const circle = el('circle', { r: 34 }, tag);
+          const t = el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-family': T.nameFont, 'font-weight': T.hand === 'ornate' ? 700 : 600 }, tag);
+          h = hands[p.name] = { g, path, tag, circle, t };
+          if (angles[p.name] === undefined) angles[p.name] = target - 40;
         }
         h.target = target; h.len = len;
-        h.path.setAttribute('d', handPath(len));
-        h.t.textContent = p.name.length > 6 ? p.name.slice(0, 5) + '.' : p.name;
-        h.t.setAttribute('font-size', p.name.length > 4 ? 13 : 16);
-        h.place = p.place;
+        h.path.setAttribute('d', handShape(T, len));
+        h.path.setAttribute('fill', color);
+        h.path.setAttribute('stroke', T.handStroke); h.path.setAttribute('stroke-width', T.handStroke === 'none' ? 0 : 1.5);
+        h.circle.setAttribute('fill', T.tagText ? color : T.tagFill);
+        h.circle.setAttribute('stroke', T.tagText ? T.tagFill : color);
+        h.circle.setAttribute('stroke-width', T.hand === 'line' ? 3 : 5);
+        h.t.setAttribute('fill', T.tagText || color);
+        const nm = p.name.length > 7 ? p.name.slice(0, 6) + '.' : p.name;
+        h.t.textContent = nm;
+        const base = T.hand === 'ornate' ? 21 : 15;
+        h.t.setAttribute('font-size', (nm.length > 5 ? base * 0.82 : base).toFixed(1));
       });
     });
-    for (const name in hands) {
-      if (!seen.has(name)) { hands[name].g.remove(); hands[name].tag.remove(); delete hands[name]; }
-    }
+    for (const name in hands) if (!seen.has(name)) { hands[name].g.remove(); hands[name].tag.remove(); delete hands[name]; }
 
     legend.innerHTML = '';
-    people.forEach(p => {
+    order.forEach(name => {
+      const p = people.find(x => x.name === name); if (!p) return;
       const d = document.createElement('div'); d.className = 'who';
-      d.innerHTML = `<div class="dot"></div><div><b></b><br><span></span></div>`;
-      d.querySelector('.dot').style.background = colorFor(p.name);
-      d.querySelector('b').textContent = p.name;
+      d.innerHTML = '<div class="dot"></div><div><b></b><br><span></span></div>';
+      d.querySelector('.dot').style.background = colorOf(name);
+      d.querySelector('b').textContent = name;
       d.querySelector('span').textContent = p.place;
       legend.appendChild(d);
     });
-    lastUpdated = state.updated ? new Date(state.updated) : new Date();
     animate();
   }
 
@@ -273,10 +426,12 @@
       let moving = false;
       for (const name in hands) {
         const h = hands[name];
-        let diff = ((h.target - h.angle) % 360 + 540) % 360 - 180;   // shortest way round
-        if (Math.abs(diff) > 0.05) { h.angle += diff * 0.06 + Math.sign(diff) * 0.05; moving = true; } else h.angle = h.target;
-        h.g.setAttribute('transform', `rotate(${h.angle.toFixed(2)} ${C} ${C})`);
-        const [x, y] = pt(h.len - 70, h.angle);
+        let a = angles[name];
+        const diff = ((h.target - a) % 360 + 540) % 360 - 180;
+        if (Math.abs(diff) > 0.05) { a += diff * 0.07 + Math.sign(diff) * 0.05; moving = true; } else a = h.target;
+        angles[name] = a;
+        h.g.setAttribute('transform', `rotate(${a.toFixed(2)} ${C} ${C})`);
+        const [x, y] = pt(h.len - 72, a);
         h.tag.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
       }
       if (moving) requestAnimationFrame(tick); else animating = false;
@@ -284,64 +439,57 @@
     requestAnimationFrame(tick);
   }
 
-  // ---------- status ----------
-  let lastUpdated = null, connected = false, lastError = '';
+  // ---------------- status ----------------
+  let lastUpdated = null, connected = false, lastError = '', demoMode = false;
   function ago(d) {
     const s = Math.round((Date.now() - d) / 1000);
-    if (s < 60) return 'just now';
-    if (s < 3600) return Math.round(s / 60) + ' min ago';
-    if (s < 86400) return Math.round(s / 3600) + ' h ago';
-    return Math.round(s / 86400) + ' d ago';
+    if (s < 60) return 'just now'; if (s < 3600) return Math.round(s / 60) + ' min ago';
+    if (s < 86400) return Math.round(s / 3600) + ' h ago'; return Math.round(s / 86400) + ' d ago';
   }
   function renderStatus() {
-    const parts = [];
-    parts.push(connected ? 'Connected' : (lastError || 'Connecting…'));
+    const parts = [demoMode ? 'Preview (sample data)' : connected ? 'Connected' : (lastError || 'Connecting…')];
     if (lastUpdated) parts.push('updated ' + ago(lastUpdated));
     statusEl.textContent = parts.join(' · ');
     statusEl.classList.toggle('bad', !connected && !demoMode);
   }
   setInterval(renderStatus, 15000);
 
-  // ---------- minimal MQTT 3.1.1 over WebSocket (subscribe only) ----------
+  function receive(state) {
+    lastState = state;
+    lastUpdated = state.updated ? new Date(state.updated) : new Date();
+    render(); renderStatus();
+    if (panel.classList.contains('open')) renderLists();
+  }
+
+  // ---------------- minimal MQTT 3.1.1 over WebSocket (read-only) ----------------
   const enc = new TextEncoder(), dec = new TextDecoder();
   const str = s => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
-  const remLen = n => { const out = []; do { let b = n % 128; n = Math.floor(n / 128); if (n > 0) b |= 128; out.push(b); } while (n > 0); return out; };
+  const remLen = n => { const o = []; do { let b = n % 128; n = Math.floor(n / 128); if (n > 0) b |= 128; o.push(b); } while (n > 0); return o; };
   const packet = (first, body) => new Uint8Array([first, ...remLen(body.length), ...body]);
+  let ws = null, buf = new Uint8Array(0), pingTimer = null, pongTimer = null, retryDelay = 2000, retryTimer = null;
 
-  let ws = null, buf = new Uint8Array(0), pingTimer = null, pongTimer = null, retryDelay = 2000, retryTimer = null, demoMode = false;
-
+  function stopSocket() { clearTimeout(retryTimer); clearInterval(pingTimer); clearTimeout(pongTimer); if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; } }
   function connect() {
-    const s = loadSettings();
-    if (!s || !s.host) { openPanel(); return; }
-    demoMode = false;
-    clearTimeout(retryTimer);
-    if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} }
+    if (!hasConnection()) { openPanel('conn'); return; }
+    demoMode = false; clearInterval(demoTimer);
+    stopSocket();
     lastError = 'Connecting…'; connected = false; renderStatus();
-    const host = s.host.replace(/^\w+:\/\//, '').replace(/\/.*$/, '').replace(/:\d+$/, '');
-    try { ws = new WebSocket(`wss://${host}:${s.port || 8084}/mqtt`, ['mqtt']); }
-    catch (e) { lastError = 'Bad broker address'; renderStatus(); return; }
-    ws.binaryType = 'arraybuffer';
-    buf = new Uint8Array(0);
+    const host = S.host.replace(/^\w+:\/\//, '').replace(/\/.*$/, '').replace(/:\d+$/, '');
+    try { ws = new WebSocket(`wss://${host}:${S.port || 8084}/mqtt`, ['mqtt']); } catch (e) { lastError = 'Bad broker address'; renderStatus(); return; }
+    ws.binaryType = 'arraybuffer'; buf = new Uint8Array(0);
     ws.onopen = () => {
-      const clientId = 'weasley-screen-' + Math.random().toString(36).slice(2, 10);
-      const body = [...str('MQTT'), 4, 0x80 | 0x40 | 0x02, 0, 60, ...str(clientId), ...str(s.user || ''), ...str(s.pass || '')];
-      ws.send(packet(0x10, body));
+      const id = 'weasley-screen-' + Math.random().toString(36).slice(2, 10);
+      ws.send(packet(0x10, [...str('MQTT'), 4, 0xC2, 0, 60, ...str(id), ...str(S.user || ''), ...str(S.pass || '')]));
     };
-    ws.onmessage = ev => {
-      const chunk = new Uint8Array(ev.data);
-      const nb = new Uint8Array(buf.length + chunk.length); nb.set(buf); nb.set(chunk, buf.length); buf = nb;
-      parse();
-    };
-    ws.onerror = () => { lastError = 'Connection error'; };
+    ws.onmessage = ev => { const c = new Uint8Array(ev.data), nb = new Uint8Array(buf.length + c.length); nb.set(buf); nb.set(c, buf.length); buf = nb; parse(); };
+    ws.onerror = () => { if (!connected) lastError = 'Connection error'; };
     ws.onclose = () => {
       connected = false; clearInterval(pingTimer); clearTimeout(pongTimer);
       if (!lastError || lastError === 'Connecting…') lastError = 'Disconnected, retrying…';
       renderStatus();
-      retryTimer = setTimeout(connect, retryDelay);
-      retryDelay = Math.min(retryDelay * 2, 60000);
+      retryTimer = setTimeout(connect, retryDelay); retryDelay = Math.min(retryDelay * 2, 60000);
     };
   }
-
   function parse() {
     while (buf.length >= 2) {
       let mult = 1, len = 0, i = 1, b;
@@ -352,75 +500,136 @@
       handle(type, flags, body);
     }
   }
-
   function handle(type, flags, body) {
-    const s = loadSettings() || {};
-    if (type === 2) {                                  // CONNACK
+    if (type === 2) {
       const rc = body[1];
-      if (rc !== 0) {
-        lastError = rc === 4 ? 'Wrong username or password' : rc === 5 ? 'Login not authorised' : 'Broker refused (' + rc + ')';
-        renderStatus(); retryDelay = 60000; return;
-      }
+      if (rc !== 0) { lastError = rc === 4 ? 'Wrong username or password' : rc === 5 ? 'Login not authorised' : 'Broker refused (' + rc + ')'; renderStatus(); retryDelay = 60000; return; }
       connected = true; lastError = ''; retryDelay = 2000; renderStatus();
-      ws.send(packet(0x82, [0, 1, ...str(s.topic || 'clock/state'), 0]));
+      ws.send(packet(0x82, [0, 1, ...str(S.topic || 'clock/state'), 0]));
       clearInterval(pingTimer);
-      pingTimer = setInterval(() => {
-        if (ws.readyState !== 1) return;
-        ws.send(new Uint8Array([0xC0, 0]));
-        pongTimer = setTimeout(() => { try { ws.close(); } catch (e) {} }, 15000);
-      }, 30000);
-    } else if (type === 9) {                           // SUBACK
-      if (body[2] === 0x80) { lastError = 'Not allowed to read ' + (s.topic || 'clock/state'); connected = false; renderStatus(); }
-    } else if (type === 13) {                          // PINGRESP
+      pingTimer = setInterval(() => { if (!ws || ws.readyState !== 1) return; ws.send(new Uint8Array([0xC0, 0])); pongTimer = setTimeout(() => { try { ws.close(); } catch (e) {} }, 15000); }, 30000);
+    } else if (type === 9) {
+      if (body[2] === 0x80) { lastError = 'Not allowed to read ' + (S.topic || 'clock/state'); connected = false; renderStatus(); }
+    } else if (type === 13) {
       clearTimeout(pongTimer);
-    } else if (type === 3) {                           // PUBLISH
-      const qos = (flags >> 1) & 3;
-      const tl = (body[0] << 8) | body[1];
+    } else if (type === 3) {
+      const qos = (flags >> 1) & 3, tl = (body[0] << 8) | body[1];
       let pos = 2 + tl;
       if (qos > 0) { const id = [body[pos], body[pos + 1]]; pos += 2; if (qos === 1) ws.send(new Uint8Array([0x40, 2, ...id])); }
-      try { update(JSON.parse(dec.decode(body.slice(pos)))); renderStatus(); } catch (e) { console.warn('Bad clock message', e); }
+      try { receive(JSON.parse(dec.decode(body.slice(pos)))); } catch (e) { console.warn('Bad clock message', e); }
     }
   }
 
-  // ---------- settings panel ----------
-  const panel = document.getElementById('panel'), form = document.getElementById('form'), msg = document.getElementById('msg');
-  function openPanel() {
-    const s = loadSettings() || {};
-    for (const k of ['host', 'port', 'topic', 'user', 'pass', 'title']) if (s[k] !== undefined) form.elements[k].value = s[k];
-    msg.textContent = '';
+  // ---------------- preview ----------------
+  let demoTimer = null;
+  function startDemo() {
+    stopSocket(); demoMode = true;
+    const slots = (lastState && lastState.slots) || ['Home', 'M+Z Home', 'Burgin Home', 'E+J Home', 'UMich', 'MSU', 'Burgin Up North Cottage', 'Burgin Down South Cottage', 'Kellys Work', 'Justins Work', 'Maddies Work', 'Zachs Work', 'Emilys Work', 'Jacobs Work', 'Katies Work', 'Camdens Work', 'Traveling', 'Lost!'];
+    const names = (lastState && lastState.people && lastState.people.length ? lastState.people.map(p => p.name) : ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie']);
+    const pick = () => ({ slots, people: names.map(n => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: n, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
+    receive(pick());
+    clearInterval(demoTimer); demoTimer = setInterval(() => receive(pick()), 6000);
+  }
+
+  // ---------------- settings panel ----------------
+  const panel = document.getElementById('panel'), msg = document.getElementById('msg');
+  const $ = id => document.getElementById(id);
+  function showTab(name) {
+    document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === name));
+  }
+  document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+  const themeBox = $('themeChoices');
+  Object.entries(THEMES).forEach(([k, T]) => {
+    const b = document.createElement('button'); b.dataset.v = k;
+    b.innerHTML = `${T.label}<small>${T.sub}</small>`;
+    b.onclick = () => { S.theme = k; save(S); syncChoices(); dialKey = ''; render(); };
+    themeBox.appendChild(b);
+  });
+  document.querySelectorAll('#labelChoices button').forEach(b => b.onclick = () => { S.labels = b.dataset.v; save(S); syncChoices(); dialKey = ''; render(); });
+  function syncChoices() {
+    themeBox.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === S.theme));
+    document.querySelectorAll('#labelChoices button').forEach(b => b.classList.toggle('on', b.dataset.v === S.labels));
+  }
+  $('title').oninput = e => { S.title = e.target.value; save(S); dialKey = ''; render(); };
+
+  function moveIn(arr, i, d) { const j = i + d; if (j < 0 || j >= arr.length) return arr; const a = arr.slice(); [a[i], a[j]] = [a[j], a[i]]; return a; }
+  function renderLists() {
+    const pl = $('placeList'); pl.innerHTML = '';
+    const slots = displaySlots();
+    if (!lastState) pl.innerHTML = '<div class="item">Connect (or tap Preview) to see your places.</div>';
+    else slots.forEach((s, i) => {
+      const row = document.createElement('div'); row.className = 'item';
+      row.innerHTML = `<span class="num">${i + 1}</span><span class="grow"></span><button title="Move up">↑</button><button title="Move down">↓</button>`;
+      row.querySelector('.grow').textContent = s;
+      const [up, down] = row.querySelectorAll('button');
+      up.onclick = () => { S.order = moveIn(slots, i, -1); save(S); renderLists(); render(); };
+      down.onclick = () => { S.order = moveIn(slots, i, 1); save(S); renderLists(); render(); };
+      pl.appendChild(row);
+    });
+    const ppl = $('peopleList'); ppl.innerHTML = '';
+    const order = displayPeople();
+    if (!order.length) ppl.innerHTML = '<div class="item">Connect (or tap Preview) to see people.</div>';
+    order.forEach((name, i) => {
+      const row = document.createElement('div'); row.className = 'item';
+      row.innerHTML = `<input type="color"><span class="grow"></span><span class="num" title="Arm length rank">${i === 0 ? 'longest' : i === order.length - 1 ? 'shortest' : ''}</span><button title="Longer arm">↑</button><button title="Shorter arm">↓</button>`;
+      row.querySelector('.grow').textContent = name;
+      row.querySelector('.num').style.width = '4.5em';
+      const c = row.querySelector('input'); c.value = colorOf(name);
+      c.oninput = () => { S.colors = Object.assign({}, S.colors, { [name]: c.value }); save(S); render(); };
+      const [up, down] = row.querySelectorAll('button');
+      up.onclick = () => { S.peopleOrder = moveIn(order, i, -1); save(S); renderLists(); render(); };
+      down.onclick = () => { S.peopleOrder = moveIn(order, i, 1); save(S); renderLists(); render(); };
+      ppl.appendChild(row);
+    });
+  }
+  $('resetPlaces').onclick = () => { S.order = null; save(S); renderLists(); render(); };
+  $('resetPeople').onclick = () => { S.peopleOrder = null; S.colors = {}; save(S); renderLists(); render(); };
+
+  function openPanel(tab) {
+    S = load();
+    for (const k of ['host', 'port', 'topic', 'user', 'pass', 'title']) $(k).value = S[k] || '';
+    syncChoices(); renderLists(); msg.textContent = '';
+    if (tab) showTab(tab);
     panel.classList.add('open');
   }
-  document.getElementById('gear').onclick = openPanel;
-  panel.addEventListener('click', e => { if (e.target === panel && loadSettings()) panel.classList.remove('open'); });
-  form.onsubmit = e => {
-    e.preventDefault();
-    const f = form.elements;
-    saveSettings({ host: f.host.value.trim(), port: f.port.value.trim() || '8084', topic: f.topic.value.trim() || 'clock/state', user: f.user.value.trim(), pass: f.pass.value, title: f.title.value.trim() });
-    panel.classList.remove('open');
-    dialKey = '';
-    connect();
+  $('gear').onclick = () => openPanel();
+  panel.addEventListener('click', e => { if (e.target === panel) panel.classList.remove('open'); });
+  $('saveConnect').onclick = () => {
+    for (const k of ['host', 'port', 'topic', 'user', 'pass']) S[k] = $(k).value.trim();
+    if (!S.port) S.port = '8084'; if (!S.topic) S.topic = 'clock/state';
+    if (!S.host || !S.pass) { showTab('conn'); msg.textContent = 'Enter the broker address and password first.'; return; }
+    save(S); panel.classList.remove('open'); connect();
   };
-  document.getElementById('demo').onclick = () => {
-    demoMode = true;
-    if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} }
-    panel.classList.remove('open');
-    const slots = ['Home', 'M+Z Home', 'Burgin Home', 'E+J Home', 'UMich', 'MSU', 'Burgin Up North Cottage', 'Burgin Down South Cottage', 'Kellys Work', 'Justins Work', 'Maddies Work', 'Zachs Work', 'Emilys Work', 'Jacobs Work', 'Katies Work', 'Camdens Work', 'Traveling', 'Lost!'];
-    const names = ['Kelly', 'Justin', 'Maddie', 'Zach', 'Emily', 'Jacob', 'Camden', 'Katie'];
-    const pick = () => ({ slots, people: names.map(n => { const i = Math.random() < .3 ? 0 : Math.floor(Math.random() * slots.length); return { name: n, place: slots[i], slot: i }; }), updated: new Date().toISOString() });
-    connected = false; lastError = 'Preview (sample data)';
-    update(pick()); renderStatus();
-    clearInterval(window.__demo); window.__demo = setInterval(() => { if (demoMode) { update(pick()); renderStatus(); } }, 6000);
+  $('demo').onclick = () => { panel.classList.remove('open'); startDemo(); };
+
+  // setup codes: copy look/order/colors/address to another device (no password)
+  $('copyCode').onclick = async () => {
+    const { pass, ...rest } = S;
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(rest))));
+    $('code').value = code; $('code').select();
+    try { await navigator.clipboard.writeText(code); msg.textContent = 'Code copied. Paste it on the other device, then add the password.'; }
+    catch (e) { msg.textContent = 'Code shown above — copy it, paste it on the other device, then add the password.'; }
+  };
+  $('applyCode').onclick = () => {
+    try {
+      const data = JSON.parse(decodeURIComponent(escape(atob($('code').value.trim()))));
+      delete data.pass;
+      S = Object.assign({}, S, data); save(S); openPanel('conn'); dialKey = ''; render();
+      msg.textContent = 'Applied. Enter the password, then Save & connect.';
+    } catch (e) { msg.textContent = "That code didn't work — copy it again and paste the whole thing."; }
   };
 
-  // ---------- keep the screen awake where supported ----------
-  let lock = null;
-  async function wake() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') lock = await navigator.wakeLock.request('screen'); } catch (e) {} }
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { wake(); if (!demoMode && (!ws || ws.readyState > 1)) connect(); } });
+  // ---------------- keep the screen awake ----------------
+  async function wake() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') await navigator.wakeLock.request('screen'); } catch (e) {} }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { wake(); if (!demoMode && hasConnection() && (!ws || ws.readyState > 1)) connect(); } });
   wake();
 
-  // ---------- start ----------
-  drawDial(['Home'], (loadSettings() || {}).title);
-  if (loadSettings()) connect(); else openPanel();
+  // ---------------- start ----------------
+  render();
+  if (hasConnection()) connect(); else openPanel('conn');
+  if (document.fonts) document.fonts.ready.then(() => { dialKey = ''; render(); });
 })();
 </script>
 </body>
